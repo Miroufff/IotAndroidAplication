@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="fr.imie.sensair">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:name=".Application"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme">
+        <activity android:name=".activities.LoginActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".activities.RegisterActivity" />
+        <activity android:name=".activities.SensorActivity" />
+        <activity android:name=".activities.AddSensorActivity" />
+        <activity android:name=".activities.DetailSensorActivity"/>
+        <service android:name=".services.AirQualityExceptionService" />
+        <meta-data android:name="AA_DB_NAME" android:value="sensair" />
+        <meta-data android:name="AA_DB_VERSION" android:value="1" />
+    </application>
+
+</manifest>

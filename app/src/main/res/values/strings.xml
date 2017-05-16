@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">Sensair</string>
+    <string name="button_connect">Connect</string>
+    <string name="button_register">Register</string>
+    <string name="button_validate">Validate</string>
+    <string name="text_view_authentification">Authentification</string>
+    <string name="edit_text_login">Login</string>
+    <string name="edit_text_password">Password</string>
+    <string name="checkbox_password_save">Save Login/Password ?</string>
+    <string name="enable">Enable</string>
+    <string name="title_activity_maps">Map</string>
+    <string name="uuid">UUID</string>
+    <string name="add_uuid">Add the uuid of the sensor</string>
+</resources>
