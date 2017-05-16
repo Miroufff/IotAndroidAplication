@@ -12,12 +12,14 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.activeandroid.query.Select;
+
 import fr.imie.sensair.R;
-import fr.imie.sensair.activities.SensorActivity;
-import fr.imie.sensair.entities.Sensor;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
+import fr.imie.sensair.model.Sensor;
+import fr.imie.sensair.model.User;
+
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by mirouf on 12/04/17.
@@ -54,7 +56,7 @@ public class SensorAdapter extends ArrayAdapter<Sensor> {
         if (sensor != null) {
             //il ne reste plus qu'à remplir notre vue
             viewHolder.displayName.setText(sensor.getDisplayName());
-            viewHolder.enable.setChecked(sensor.getEnable());
+            viewHolder.enable.setChecked(sensor.isEnable());
             viewHolder.enable.setTag(position);
             viewHolder.imageDeleteSensorButton.setTag(position);
         }
@@ -72,7 +74,7 @@ public class SensorAdapter extends ArrayAdapter<Sensor> {
                 // TODO - Send mqtt msg to stop send data
                 SensorAdapter.this.sensors.get((Integer) arg0.getTag()).setEnable(((Switch) arg0).isChecked());
                 Toast.makeText(SensorAdapter.this.context,
-                        "Sensor enable is " + SensorAdapter.this.sensors.get((Integer) arg0.getTag()).getEnable(),
+                        "Sensor enable is " + SensorAdapter.this.sensors.get((Integer) arg0.getTag()).isEnable(),
                         Toast.LENGTH_LONG
                 ).show();
             }
@@ -109,5 +111,13 @@ public class SensorAdapter extends ArrayAdapter<Sensor> {
 
         AlertDialog alertDialog = builder.create();
         alertDialog.show();
+    }
+
+    public static List<Sensor> getAll(User user) {
+        return new Select()
+            .from(Sensor.class)
+            .where("User = ?", user.getId())
+            .orderBy("DisplayName ASC")
+            .execute();
     }
 }

@@ -1,4 +1,4 @@
-package fr.imie.sensair.entities;
+package fr.imie.sensair.model;
 
 import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;
@@ -22,6 +22,10 @@ public class User extends Model
 
     @Column(name = "password")
     private String password;
+
+    public User() {
+        super();
+    }
 
     public String getFirstname() {
         return firstname;

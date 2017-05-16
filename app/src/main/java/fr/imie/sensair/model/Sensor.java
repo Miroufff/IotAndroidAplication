@@ -1,4 +1,4 @@
-package fr.imie.sensair.entities;
+package fr.imie.sensair.model;
 
 import com.activeandroid.Model;
 import com.activeandroid.annotation.Column;
@@ -28,6 +28,13 @@ public class Sensor extends Model
 
     @Column(name = "enable")
     private boolean enable;
+
+    @Column(name = "User")
+    private User user;
+
+    public Sensor() {
+        super();
+    }
 
     public String getDisplayName() {
         return displayName;
@@ -69,11 +76,19 @@ public class Sensor extends Model
         this.version = version;
     }
 
-    public boolean getEnable() {
+    public boolean isEnable() {
         return enable;
     }
 
     public void setEnable(boolean enable) {
         this.enable = enable;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 }

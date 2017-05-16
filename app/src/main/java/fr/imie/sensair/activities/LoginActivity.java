@@ -11,7 +11,7 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 
 import fr.imie.sensair.R;
-import fr.imie.sensair.entities.User;
+import fr.imie.sensair.model.User;
 
 public class LoginActivity extends AppCompatActivity {
     public static final String LOGIN_KEY = "LOGIN_KEY";
@@ -57,10 +57,10 @@ public class LoginActivity extends AppCompatActivity {
                 if (login.getText().toString().equals("login") && password.getText().toString().equals("password")) {
                     User currentUser = new User();
                     currentUser
-                            .setLogin(login.getText().toString())
-                            .setPassword(password.getText().toString())
-                            .setFirstname("Toto")
-                            .setLastname("Truc");
+                        .setLogin(login.getText().toString())
+                        .setPassword(password.getText().toString())
+                        .setFirstname("Toto")
+                        .setLastname("Truc");
 
                     /*Bundle bundle = new Bundle();
                     bundle.putSerializable("USER", currentUser);*/

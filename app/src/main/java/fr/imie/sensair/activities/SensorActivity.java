@@ -14,9 +14,11 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.List;
+
 import fr.imie.sensair.R;
 import fr.imie.sensair.adapters.SensorAdapter;
-import fr.imie.sensair.entities.Sensor;
+import fr.imie.sensair.model.Sensor;
 import fr.imie.sensair.services.AirQualityExceptionService;
 
 public class SensorActivity extends AppCompatActivity {
@@ -30,7 +32,9 @@ public class SensorActivity extends AppCompatActivity {
 
         this.addSensorButton = (Button) this.findViewById(R.id.addSensorButton);
         this.sensorList = (ListView) findViewById(R.id.listView);
+
         ArrayList<Sensor> sensors = generateSensors();
+
         final SensorAdapter adapter = new SensorAdapter(SensorActivity.this, sensors);
         this.sensorList.setAdapter(adapter);
 
@@ -70,28 +74,35 @@ public class SensorActivity extends AppCompatActivity {
     };
 
     private ArrayList<Sensor> generateSensors() {
+        /*ArrayList<Sensor> sensors = SensorAdapter.getAll();*/
         ArrayList<Sensor> sensors = new ArrayList<>();
 
-        Sensor sensor = new Sensor();
-        sensor.setId(1);
-        sensor.setDisplayName("Rasp-Sensor.1");
-        sensor.setEnable(true);
-        sensor.setVendor("Raspberry");
-        sensor.setProduct("Pi");
-        sensor.setVersion(3);
-        sensor.setUuid("c10d2fc4-9361-4c24-91f4-c355379cbf44");
+        /*if (sensors.size() == 0) {*/
+            Sensor sensor = new Sensor();
+            sensor.setDisplayName("Home");
+            sensor.setEnable(true);
+            sensor.setVendor("Raspberry");
+            sensor.setProduct("Pi");
+            sensor.setVersion(3);
+            sensor.setUuid("c10d2fc4-9361-4c24-91f4-c355379cbf44");
+            /*sensor.setUser();
+            sensor.save();*/
 
-        Sensor sensor2 = new Sensor();
-        sensor2.setId(2);
-        sensor2.setDisplayName("Rasp-Sensor.2");
-        sensor2.setEnable(false);
-        sensor2.setVendor("Raspberry");
-        sensor2.setProduct("Pi");
-        sensor2.setVersion(2);
-        sensor2.setUuid("086edadc-feaa-495d-bfc3-58d905d3ddcb");
+            Sensor sensor2 = new Sensor();
+            sensor2.setDisplayName("Work");
+            sensor2.setEnable(false);
+            sensor2.setVendor("Raspberry");
+            sensor2.setProduct("Pi");
+            sensor2.setVersion(2);
+            sensor2.setUuid("086edadc-feaa-495d-bfc3-58d905d3ddcb");
+            /*sensor2.setUser();
+            sensor2.save();
 
-        sensors.add(sensor);
-        sensors.add(sensor2);
+            sensors = SensorAdapter.getAll()
+
+        }*/
+            sensors.add(sensor);
+            sensors.add(sensor2);
 
         return sensors;
     }
