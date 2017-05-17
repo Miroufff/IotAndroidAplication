@@ -1,13 +1,21 @@
 package fr.imie.sensair.activities;
 
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -16,67 +24,112 @@ import fr.imie.sensair.model.User;
 
 public class RegisterActivity extends AppCompatActivity {
 
-    private EditText username;
-    private EditText email;
-    private EditText password;
-    private EditText confirm_password;
-    private Button register;
+    EditText usernameText;
+    EditText emailText;
+    EditText passwordText;
+    EditText confirmPasswordText;
+    Button registerButton;
+    ProgressBar progressBar;
+    TextView responseView;
+
+    static final String API_URL = "http://iot.lacji.net/api";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
 
-        username = (EditText) findViewById(R.id.editTextUsername);
-        email = (EditText) findViewById(R.id.editTextEmail);
-        password = (EditText) findViewById(R.id.editTextPassword);
-        confirm_password = (EditText) findViewById(R.id.editTextConfirmPassword);
-        register = (Button) findViewById(R.id.buttonRegister);
+        usernameText = (EditText) findViewById(R.id.editTextUsername);
+        emailText = (EditText) findViewById(R.id.editTextEmail);
+        passwordText = (EditText) findViewById(R.id.editTextPassword);
+        confirmPasswordText = (EditText) findViewById(R.id.editTextConfirmPassword);
+        registerButton = (Button) findViewById(R.id.buttonRegister);
 
-        register.setOnClickListener(new View.OnClickListener() {
+        responseView = (TextView) findViewById(R.id.responseView);
+        progressBar = (ProgressBar) findViewById(R.id.progressBar);
+
+        registerButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                if (!isEmailValid(email.getText().toString())) {
-                    Toast.makeText(RegisterActivity.this, getString(R.string.register_not_valid_email), Toast.LENGTH_LONG).show();
-                }
-
-                if (confirm_password.getText().toString().matches(password.getText().toString())) {
-                    User currentUser = new User();
-                    currentUser
-                        .setUsername(username.getText().toString())
-                        .setPassword(password.getText().toString())
-                        .setEmail(email.getText().toString())
-                        .setFirstname("Toto")
-                        .setLastname("Truc");
-
-                    startActivity(new Intent(RegisterActivity.this, SensorActivity.class));
-                } else {
-                    Toast.makeText(RegisterActivity.this, getString(R.string.register_password_not_match), Toast.LENGTH_LONG).show();
-                }
+                new AsyncPostTask().execute();
             }
         });
+    }
+
+    class AsyncPostTask extends AsyncTask<Void, Void, String> {
+
+        Exception exception;
+        String email = emailText.getText().toString();
+        String username = usernameText.getText().toString();
+        String password = passwordText.getText().toString();
+        String confirm_password = confirmPasswordText.getText().toString();
+
+        protected void onPreExecute() {
+            progressBar.setVisibility(View.VISIBLE);
+            responseView.setText("");
+        }
+
+        protected String doInBackground(Void... urls) {
+
+            if (email == null && !isEmailValid(email)) {
+                return null;
+            }
+
+            if (password == null && confirm_password == null && !confirm_password.matches(password)) {
+                return null;
+            }
+
+            if (username == null) {
+                return null;
+            }
+
+            try {
+                URL url = new URL(API_URL + "email=" + email);
+                HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
+                try {
+                    BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
+                    StringBuilder stringBuilder = new StringBuilder();
+                    String line;
+                    while ((line = bufferedReader.readLine()) != null) {
+                        stringBuilder.append(line).append("\n");
+                    }
+                    bufferedReader.close();
+                    return stringBuilder.toString();
+                }
+                finally{
+                    urlConnection.disconnect();
+                }
+            }
+            catch(Exception e) {
+                Log.e("ERROR", e.getMessage(), e);
+                return null;
+            }
+        }
+
+        protected void onPostExecute(String response) {
+            if(response == null) {
+                response = "THERE WAS AN ERROR";
+            }
+            progressBar.setVisibility(View.GONE);
+            Log.i("INFO", response);
+            responseView.setText(response);
+        }
     }
 
     public boolean isEmailValid(String email)
     {
         String regExpn =
-                "^(([\\w-]+\\.)+[\\w-]+|([a-zA-Z]{1}|[\\w-]{2,}))@"
-                        +"((([0-1]?[0-9]{1,2}|25[0-5]|2[0-4][0-9])\\.([0-1]?"
-                        +"[0-9]{1,2}|25[0-5]|2[0-4][0-9])\\."
-                        +"([0-1]?[0-9]{1,2}|25[0-5]|2[0-4][0-9])\\.([0-1]?"
-                        +"[0-9]{1,2}|25[0-5]|2[0-4][0-9])){1}|"
-                        +"([a-zA-Z]+[\\w-]+\\.)+[a-zA-Z]{2,4})$";
-
-        CharSequence inputStr = email;
+            "^(([\\w-]+\\.)+[\\w-]+|([a-zA-Z]{1}|[\\w-]{2,}))@"
+                +"((([0-1]?[0-9]{1,2}|25[0-5]|2[0-4][0-9])\\.([0-1]?"
+                +"[0-9]{1,2}|25[0-5]|2[0-4][0-9])\\."
+                +"([0-1]?[0-9]{1,2}|25[0-5]|2[0-4][0-9])\\.([0-1]?"
+                +"[0-9]{1,2}|25[0-5]|2[0-4][0-9])){1}|"
+                +"([a-zA-Z]+[\\w-]+\\.)+[a-zA-Z]{2,4})$";
 
         Pattern pattern = Pattern.compile(regExpn,Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(inputStr);
+        Matcher matcher = pattern.matcher(email);
 
-        if(matcher.matches())
-            return true;
-        else
-            return false;
+        return matcher.matches();
     }
 }
 

@@ -20,7 +20,7 @@
             android:layout_height="wrap_content"
             android:ems="10"
             android:inputType="textPersonName"
-            android:text="Name"
+            android:hint="Name"
             android:layout_alignParentTop="true"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="81dp"
@@ -31,7 +31,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:ems="10"
-            android:text="Email"
+            android:hint="Email"
             android:inputType="textEmailAddress"
             android:layout_below="@id/editTextUsername"
             android:layout_marginBottom="25dp"
@@ -42,7 +42,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:ems="10"
-            android:text="Password"
+            android:hint="Password"
             android:inputType="textPassword"
             android:layout_below="@id/editTextEmail"
             android:layout_alignStart="@+id/editTextUsername"
@@ -53,7 +53,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:ems="10"
-            android:text="_confirm"
+            android:hint="Confirm Password"
             android:inputType="textPassword"
             android:layout_below="@id/editTextPassword"
             android:layout_alignStart="@+id/editTextUsername"
@@ -65,7 +65,31 @@
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
             android:layout_below="@id/editTextConfirmPassword"
-            android:text="Inscrivez-vous" />
+            android:text="@string/inscrivez_vous" />
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center">
+
+            <ProgressBar
+                android:id="@+id/progressBar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:indeterminate="true"
+                android:layout_centerHorizontal="true"
+                android:visibility="gone" />
+
+            <ScrollView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <TextView
+                    android:id="@+id/responseView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </ScrollView>
+        </RelativeLayout>
 
     </RelativeLayout>
 </android.support.constraint.ConstraintLayout>
