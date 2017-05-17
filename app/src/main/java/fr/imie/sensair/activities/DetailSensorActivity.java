@@ -23,24 +23,25 @@ import org.json.JSONObject;
 import fr.imie.sensair.R;
 
 public class DetailSensorActivity extends AppCompatActivity {
-    protected TextView textViewDisplayName;
-    protected TextView textViewVendor;
-    protected TextView textViewProduct;
-    protected TextView textViewVersion;
-    protected WebView webViewGrafana;
+    protected TextView displayNameTextView;
+    protected TextView vendorTextView;
+    protected TextView productTextView;
+    protected TextView versionTextView;
+    protected WebView grafanaWebView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail_sensor);
 
-        this.textViewDisplayName = (TextView) this.findViewById(R.id.textViewDisplayName);
-        this.textViewVendor = (TextView) this.findViewById(R.id.textViewVendor);
-        this.textViewProduct = (TextView) this.findViewById(R.id.textViewProduct);
-        this.textViewVersion = (TextView) this.findViewById(R.id.textViewVersion);
-        this.webViewGrafana = (WebView) this.findViewById(R.id.webViewGrafana);
+        this.displayNameTextView = (TextView) this.findViewById(R.id.textViewDisplayName);
+        this.vendorTextView = (TextView) this.findViewById(R.id.textViewVendor);
+        this.productTextView = (TextView) this.findViewById(R.id.textViewProduct);
+        this.versionTextView = (TextView) this.findViewById(R.id.textViewVersion);
+        this.grafanaWebView = (WebView) this.findViewById(R.id.webViewGrafana);
 
-        callNetwork();
+        this.grafanaWebView.loadUrl("https://github.com");
+        //callNetwork();
     }
 
     private void callNetwork() {
@@ -65,7 +66,7 @@ public class DetailSensorActivity extends AppCompatActivity {
             @Override
             public void onResponse(String response) {
                 Toast.makeText(DetailSensorActivity.this, "Response from API : " + response, Toast.LENGTH_LONG).show();
-                DetailSensorActivity.this.webViewGrafana.loadData(response, "text/html", null);
+                DetailSensorActivity.this.grafanaWebView.loadData(response, "text/html", null);
             }
         }, new Response.ErrorListener() {
             @Override

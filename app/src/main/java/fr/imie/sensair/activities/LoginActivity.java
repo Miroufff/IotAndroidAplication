@@ -10,6 +10,8 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 
+import com.google.gson.Gson;
+
 import fr.imie.sensair.R;
 import fr.imie.sensair.model.User;
 
@@ -60,11 +62,15 @@ public class LoginActivity extends AppCompatActivity {
                     currentUser
                         .setLogin(loginEditText.getText().toString())
                         .setPassword(passwordEditText.getText().toString())
-                        .setFirstname("Toto")
-                        .setLastname("Truc");
+                        .setFirstname("Sylvain")
+                        .setLastname("Mirouf");
 
-                    Bundle bundle = new Bundle();
-                    bundle.putSerializable("USER", currentUser);
+                    SharedPreferences.Editor prefsEditor = prefs.edit();
+                    Gson gson = new Gson();
+                    String json = gson.toJson(currentUser);
+                    prefsEditor.putString("currentUser", json);
+                    prefsEditor.commit();
+
                     startActivity(new Intent(LoginActivity.this, SensorActivity.class));
                 }
             }
