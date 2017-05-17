@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="fr.imie.sensair.activities.DetailSensorActivity">
+    tools:context="fr.imie.sensair.activities.DetailUserActivity">
 
     <RelativeLayout
         android:layout_width="wrap_content"
@@ -36,7 +36,7 @@
             android:text="Product"
             android:layout_below="@id/textViewDisplayName"
             android:layout_toRightOf="@id/textViewVendor"
-            />
+        />
         <TextView
             android:id="@+id/textViewVersion"
             android:layout_width="wrap_content"
@@ -53,5 +53,4 @@
             android:layout_below="@id/textViewVendor"
             />
     </RelativeLayout>
-
 </android.support.constraint.ConstraintLayout>

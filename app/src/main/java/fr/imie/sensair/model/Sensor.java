@@ -1,35 +1,19 @@
 package fr.imie.sensair.model;
 
-import com.activeandroid.Model;
-import com.activeandroid.annotation.Column;
-import com.activeandroid.annotation.Table;
+import java.io.Serializable;
 
 /**
  * Created by mirouf on 12/05/17.
  */
 
-@Table(name = "sensor")
-public class Sensor extends Model
+public class Sensor implements Serializable
 {
-    @Column(name = "displayName")
     private String displayName;
-
-    @Column(name = "uuid")
     private String uuid;
-
-    @Column(name = "vendor")
     private String vendor;
-
-    @Column(name = "product")
     private String product;
-
-    @Column(name = "version")
     private int version;
-
-    @Column(name = "enable")
     private boolean enable;
-
-    @Column(name = "User")
     private User user;
 
     public Sensor() {

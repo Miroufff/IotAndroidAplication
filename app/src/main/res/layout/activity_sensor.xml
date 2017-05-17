@@ -20,11 +20,20 @@
             android:text="Add sensor"
             />
 
+        <Button
+            android:id="@+id/detailUserButton"
+            android:layout_centerHorizontal="true"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/addSensorButton"
+            android:text="User detail"
+            />
+
         <ListView
             android:id="@+id/listView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/addSensorButton"
+            android:layout_below="@+id/detailUserButton"
             />
 
     </RelativeLayout>

@@ -14,15 +14,16 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import fr.imie.sensair.R;
 import fr.imie.sensair.adapters.SensorAdapter;
 import fr.imie.sensair.model.Sensor;
+import fr.imie.sensair.model.User;
 import fr.imie.sensair.services.AirQualityExceptionService;
 
 public class SensorActivity extends AppCompatActivity {
     protected Button addSensorButton;
+    protected Button detailUserButton;
     protected ListView sensorList;
 
     @Override
@@ -31,6 +32,7 @@ public class SensorActivity extends AppCompatActivity {
         setContentView(R.layout.activity_sensor);
 
         this.addSensorButton = (Button) this.findViewById(R.id.addSensorButton);
+        this.detailUserButton = (Button) this.findViewById(R.id.detailUserButton);
         this.sensorList = (ListView) findViewById(R.id.listView);
 
         ArrayList<Sensor> sensors = generateSensors();
@@ -56,6 +58,14 @@ public class SensorActivity extends AppCompatActivity {
                 Toast.makeText(SensorActivity.this, "Value : " + SensorActivity.this.service.test(), Toast.LENGTH_LONG).show();
             }
         });
+
+        this.detailUserButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(SensorActivity.this, DetailUserActivity.class));
+                Toast.makeText(SensorActivity.this, "Value : " + SensorActivity.this.service.test(), Toast.LENGTH_LONG).show();
+            }
+        });
     }
 
     private AirQualityExceptionService service;
@@ -74,35 +84,34 @@ public class SensorActivity extends AppCompatActivity {
     };
 
     private ArrayList<Sensor> generateSensors() {
-        /*ArrayList<Sensor> sensors = SensorAdapter.getAll();*/
         ArrayList<Sensor> sensors = new ArrayList<>();
 
-        /*if (sensors.size() == 0) {*/
-            Sensor sensor = new Sensor();
-            sensor.setDisplayName("Home");
-            sensor.setEnable(true);
-            sensor.setVendor("Raspberry");
-            sensor.setProduct("Pi");
-            sensor.setVersion(3);
-            sensor.setUuid("c10d2fc4-9361-4c24-91f4-c355379cbf44");
-            /*sensor.setUser();
-            sensor.save();*/
+        User user = new User();
+        user.setLogin("login");
+        user.setPassword("password");
+        user.setFirstname("Mirouf");
+        user.setLastname("Davenel");
 
-            Sensor sensor2 = new Sensor();
-            sensor2.setDisplayName("Work");
-            sensor2.setEnable(false);
-            sensor2.setVendor("Raspberry");
-            sensor2.setProduct("Pi");
-            sensor2.setVersion(2);
-            sensor2.setUuid("086edadc-feaa-495d-bfc3-58d905d3ddcb");
-            /*sensor2.setUser();
-            sensor2.save();
+        Sensor sensor = new Sensor();
+        sensor.setDisplayName("Home");
+        sensor.setEnable(true);
+        sensor.setVendor("Raspberry");
+        sensor.setProduct("Pi");
+        sensor.setVersion(3);
+        sensor.setUuid("c10d2fc4-9361-4c24-91f4-c355379cbf44");
+        sensor.setUser(user);
 
-            sensors = SensorAdapter.getAll()
+        Sensor sensor2 = new Sensor();
+        sensor2.setDisplayName("Work");
+        sensor2.setEnable(false);
+        sensor2.setVendor("Raspberry");
+        sensor2.setProduct("Pi");
+        sensor2.setVersion(2);
+        sensor2.setUuid("086edadc-feaa-495d-bfc3-58d905d3ddcb");
+        sensor2.setUser(user);
 
-        }*/
-            sensors.add(sensor);
-            sensors.add(sensor2);
+        sensors.add(sensor);
+        sensors.add(sensor2);
 
         return sensors;
     }

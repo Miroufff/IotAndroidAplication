@@ -17,11 +17,11 @@ public class LoginActivity extends AppCompatActivity {
     public static final String LOGIN_KEY = "LOGIN_KEY";
     public static final String PASSWORD_KEY = "PASSWORD_KEY";
 
-    private EditText login;
-    private EditText password;
-    private CheckBox passwordSave;
-    private Button connection;
-    private Button register;
+    private EditText loginEditText;
+    private EditText passwordEditText;
+    private CheckBox passwordSaveCheckBox;
+    private Button connectionButton;
+    private Button registerButton;
 
     private SharedPreferences prefs;
 
@@ -30,46 +30,47 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        login = (EditText) findViewById(R.id.editTextLogin);
-        password = (EditText) findViewById(R.id.editTextPassword);
-        passwordSave = (CheckBox) findViewById(R.id.checkBoxPasswordSave);
-        connection = (Button) findViewById(R.id.buttonConnect);
-        register = (Button) findViewById(R.id.buttonRegister);
+        loginEditText = (EditText) findViewById(R.id.editTextLogin);
+        passwordEditText = (EditText) findViewById(R.id.editTextPassword);
+        passwordSaveCheckBox = (CheckBox) findViewById(R.id.checkBoxPasswordSave);
+        connectionButton = (Button) findViewById(R.id.buttonConnect);
+        registerButton = (Button) findViewById(R.id.buttonRegister);
 
         prefs = PreferenceManager.getDefaultSharedPreferences(this);
 
         if (prefs.contains(LOGIN_KEY) && prefs.contains(PASSWORD_KEY)) {
-            login.setText(prefs.getString(LOGIN_KEY, ""));
-            password.setText(prefs.getString(PASSWORD_KEY, ""));
-            passwordSave.setChecked(true);
+            loginEditText.setText(prefs.getString(LOGIN_KEY, ""));
+            passwordEditText.setText(prefs.getString(PASSWORD_KEY, ""));
+            passwordSaveCheckBox.setChecked(true);
         }
 
-        connection.setOnClickListener(new View.OnClickListener() {
+        connectionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (passwordSave.isChecked()) {
-                    prefs.edit().putString(LOGIN_KEY, login.getText().toString()).apply();
-                    prefs.edit().putString(PASSWORD_KEY, password.getText().toString()).apply();
+                if (passwordSaveCheckBox.isChecked()) {
+                    prefs.edit().putString(LOGIN_KEY, loginEditText.getText().toString()).apply();
+                    prefs.edit().putString(PASSWORD_KEY, passwordEditText.getText().toString()).apply();
                 } else {
                     prefs.edit().remove(LOGIN_KEY).remove(PASSWORD_KEY).apply();
                 }
 
-                if (login.getText().toString().equals("login") && password.getText().toString().equals("password")) {
+                // TODO - Call API to login
+                if (loginEditText.getText().toString().equals("login") && passwordEditText.getText().toString().equals("password")) {
                     User currentUser = new User();
                     currentUser
-                        .setLogin(login.getText().toString())
-                        .setPassword(password.getText().toString())
+                        .setLogin(loginEditText.getText().toString())
+                        .setPassword(passwordEditText.getText().toString())
                         .setFirstname("Toto")
                         .setLastname("Truc");
 
-                    /*Bundle bundle = new Bundle();
-                    bundle.putSerializable("USER", currentUser);*/
+                    Bundle bundle = new Bundle();
+                    bundle.putSerializable("USER", currentUser);
                     startActivity(new Intent(LoginActivity.this, SensorActivity.class));
                 }
             }
         });
 
-        register.setOnClickListener(new View.OnClickListener() {
+        registerButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(LoginActivity.this, RegisterActivity.class));

@@ -2,6 +2,8 @@ package fr.imie.sensair.activities;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.webkit.WebView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.Cache;
@@ -15,18 +17,29 @@ import com.android.volley.toolbox.DiskBasedCache;
 import com.android.volley.toolbox.HurlStack;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
 
 import org.json.JSONObject;
 
 import fr.imie.sensair.R;
 
 public class DetailSensorActivity extends AppCompatActivity {
+    protected TextView textViewDisplayName;
+    protected TextView textViewVendor;
+    protected TextView textViewProduct;
+    protected TextView textViewVersion;
+    protected WebView webViewGrafana;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail_sensor);
+
+        this.textViewDisplayName = (TextView) this.findViewById(R.id.textViewDisplayName);
+        this.textViewVendor = (TextView) this.findViewById(R.id.textViewVendor);
+        this.textViewProduct = (TextView) this.findViewById(R.id.textViewProduct);
+        this.textViewVersion = (TextView) this.findViewById(R.id.textViewVersion);
+        this.webViewGrafana = (WebView) this.findViewById(R.id.webViewGrafana);
+
         callNetwork();
     }
 
@@ -48,10 +61,11 @@ public class DetailSensorActivity extends AppCompatActivity {
             }
         });
 
-        StringRequest request = new StringRequest(Request.Method.GET, "http://www.google.fr", new Response.Listener<String>() {
+        StringRequest request = new StringRequest(Request.Method.GET, "https://github.com", new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 Toast.makeText(DetailSensorActivity.this, "Response from API : " + response, Toast.LENGTH_LONG).show();
+                DetailSensorActivity.this.webViewGrafana.loadData(response, "text/html", null);
             }
         }, new Response.ErrorListener() {
             @Override
@@ -60,6 +74,7 @@ public class DetailSensorActivity extends AppCompatActivity {
             }
         });
 
-        queue.add(jsonObjectRequest);
+        //queue.add(jsonObjectRequest);
+        queue.add(request);
     }
 }

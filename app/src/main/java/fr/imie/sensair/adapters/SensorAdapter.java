@@ -12,14 +12,11 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.activeandroid.query.Select;
-
 import fr.imie.sensair.R;
 import fr.imie.sensair.model.Sensor;
 import fr.imie.sensair.model.User;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by mirouf on 12/04/17.
@@ -111,13 +108,5 @@ public class SensorAdapter extends ArrayAdapter<Sensor> {
 
         AlertDialog alertDialog = builder.create();
         alertDialog.show();
-    }
-
-    public static List<Sensor> getAll(User user) {
-        return new Select()
-            .from(Sensor.class)
-            .where("User = ?", user.getId())
-            .orderBy("DisplayName ASC")
-            .execute();
     }
 }

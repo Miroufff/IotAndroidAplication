@@ -12,21 +12,23 @@ import fr.imie.sensair.model.Sensor;
 
 public class AddSensorActivity extends AppCompatActivity {
 
-    private EditText uuid;
-    private Button validate;
+    private EditText uuidEditText;
+    private EditText displayNameEditText;
+    private Button validateButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_sensor);
 
-        uuid = (EditText) findViewById(R.id.editTextUuid);
-        validate = (Button) findViewById(R.id.buttonValidate);
+        uuidEditText = (EditText) findViewById(R.id.editTextUuid);
+        displayNameEditText = (EditText) findViewById(R.id.editTextDisplayName);
+        validateButton = (Button) findViewById(R.id.buttonValidate);
 
-        validate.setOnClickListener(new View.OnClickListener() {
+        validateButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (!(uuid.getText().toString().equals(""))) {
+                if (!(uuidEditText.getText().toString().equals(""))) {
                     // TODO - Call api to get sensor
                     Sensor sensor = new Sensor();
                     sensor.setDisplayName("Rasp-Sensor.5");
@@ -35,7 +37,7 @@ public class AddSensorActivity extends AppCompatActivity {
                     sensor.setProduct("Pi");
                     sensor.setVersion(3);
                     sensor.setUuid("5151351-5151-zf4zf-54zfzf-65ezf4zef");
-                    //sensor.setUser();
+
                 } else {
                     Toast.makeText(AddSensorActivity.this, "This sensor is not register.", Toast.LENGTH_LONG);
                 }

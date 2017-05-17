@@ -1,31 +1,17 @@
 package fr.imie.sensair.model;
 
-import com.activeandroid.Model;
-import com.activeandroid.annotation.Column;
-import com.activeandroid.annotation.Table;
+import java.io.Serializable;
 
 /**
  * Created by mirouf on 11/04/17.
  */
 
-@Table(name = "user")
-public class User extends Model
+public class User implements Serializable
 {
-    @Column(name = "firstname")
     private String firstname;
-
-    @Column(name = "lastname")
     private String lastname;
-
-    @Column(name = "login")
     private String login;
-
-    @Column(name = "password")
     private String password;
-
-    public User() {
-        super();
-    }
 
     public String getFirstname() {
         return firstname;
