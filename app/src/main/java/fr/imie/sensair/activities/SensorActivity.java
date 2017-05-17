@@ -4,8 +4,10 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.AdapterView;
@@ -25,11 +27,33 @@ public class SensorActivity extends AppCompatActivity {
     protected Button addSensorButton;
     protected Button detailUserButton;
     protected ListView sensorList;
+    private SharedPreferences prefs;
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        if (!this.prefs.getBoolean("connected", false)) {
+            startActivity(new Intent(this, LoginActivity.class));
+            finish();
+
+            return;
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sensor);
+
+        this.prefs = PreferenceManager.getDefaultSharedPreferences(this);
+
+        if (!this.prefs.getBoolean("connected", false)) {
+            startActivity(new Intent(this, LoginActivity.class));
+            finish();
+
+            return;
+        }
 
         this.addSensorButton = (Button) this.findViewById(R.id.addSensorButton);
         this.detailUserButton = (Button) this.findViewById(R.id.detailUserButton);
@@ -63,6 +87,7 @@ public class SensorActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(SensorActivity.this, DetailUserActivity.class));
+                finish();
                 Toast.makeText(SensorActivity.this, "Value : " + SensorActivity.this.service.test(), Toast.LENGTH_LONG).show();
             }
         });
@@ -87,7 +112,7 @@ public class SensorActivity extends AppCompatActivity {
         ArrayList<Sensor> sensors = new ArrayList<>();
 
         User user = new User();
-        user.setLogin("login");
+        user.setUsername("login");
         user.setPassword("password");
         user.setFirstname("Mirouf");
         user.setLastname("Davenel");

@@ -5,6 +5,7 @@
     <string name="button_validate">Validate</string>
     <string name="text_view_authentification">Authentification</string>
     <string name="edit_text_login">Login</string>
+    <string name="edit_text_username">Username</string>
     <string name="edit_text_password">Password</string>
     <string name="checkbox_password_save">Save Login/Password ?</string>
     <string name="enable">Enable</string>

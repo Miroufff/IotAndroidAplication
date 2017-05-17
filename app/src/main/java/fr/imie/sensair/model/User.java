@@ -8,10 +8,9 @@ import java.io.Serializable;
 
 public class User implements Serializable
 {
-    private String email;
     private String firstname;
     private String lastname;
-    private String login;
+    private String email;
     private String username;
     private String password;
 
@@ -31,16 +30,6 @@ public class User implements Serializable
 
     public User setLastname(String lastname) {
         this.lastname = lastname;
-
-        return this;
-    }
-
-    public String getLogin() {
-        return login;
-    }
-
-    public User setLogin(String login) {
-        this.login = login;
 
         return this;
     }
