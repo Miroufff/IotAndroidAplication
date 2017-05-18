@@ -15,21 +15,17 @@ import android.widget.TextView;
 
 import com.google.gson.Gson;
 
-import org.json.JSONObject;
-
 import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.ObjectOutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import fr.imie.sensair.R;
 import fr.imie.sensair.adapters.UserAdapter;
+import fr.imie.sensair.lib.HttpUtils;
+import fr.imie.sensair.lib.Utils;
 import fr.imie.sensair.model.User;
 
 public class RegisterActivity extends AppCompatActivity {
@@ -91,7 +87,7 @@ public class RegisterActivity extends AppCompatActivity {
 
         protected String doInBackground(Void... urls) {
 
-            if (email == null || !isEmailValid(email)) {
+            if (email == null || !Utils.isEmailValid(email)) {
                 return getString(R.string.register_unvalid_email);
             } else if (password == null || confirm_password == null || !confirm_password.matches(password)) {
                 return getString(R.string.register_password_not_match);
@@ -110,7 +106,7 @@ public class RegisterActivity extends AppCompatActivity {
                 UserAdapter userAdapter = new UserAdapter();
                 if (userAdapter.isUserValid(RegisterActivity.this, currentUser, confirm_password)) {
                     try {
-                        HttpURLConnection connection = httpConnection(new URL(API_POST_URL), "POST");
+                        HttpURLConnection connection = HttpUtils.httpConnection(new URL(API_POST_URL), "POST");
 
                         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(RegisterActivity.this);
                         SharedPreferences.Editor prefsEditor = prefs.edit();
@@ -122,7 +118,7 @@ public class RegisterActivity extends AppCompatActivity {
                         outputStream.flush();
                         outputStream.close();
 
-                        String httpResponse = serializeHttpResponse(connection);
+                        String httpResponse = HttpUtils.serializeHttpResponse(connection);
 
                         prefsEditor.putString("currentUser", jsonCurrentUser);
                         prefsEditor.putBoolean("connected", true);
@@ -150,46 +146,5 @@ public class RegisterActivity extends AppCompatActivity {
             Log.i("INFO", response);
             responseView.setText(response);
         }
-    }
-
-    public HttpURLConnection httpConnection (URL url, String method) throws IOException {
-        HttpURLConnection connection= (HttpURLConnection) url.openConnection();
-        connection.setDoOutput(true);
-        connection.setRequestMethod(method);
-        connection.setRequestProperty("Content-Type", "application/json");
-        connection.connect();
-
-        return connection;
-    }
-
-    public String serializeHttpResponse(HttpURLConnection connection) throws IOException {
-        BufferedReader bufferedReader;
-        if (200 <= connection.getResponseCode() && connection.getResponseCode() <= 299) {
-            bufferedReader = new BufferedReader(new InputStreamReader((connection.getInputStream())));
-        } else {
-            bufferedReader  = new BufferedReader(new InputStreamReader((connection.getErrorStream())));
-        }
-        StringBuilder stringBuilder = new StringBuilder();
-        String output;
-        while ((output = bufferedReader.readLine()) != null) {
-            stringBuilder.append(output);
-        }
-        return stringBuilder.toString();
-    }
-
-    public boolean isEmailValid(String email)
-    {
-        String regExpn =
-                "^(([\\w-]+\\.)+[\\w-]+|([a-zA-Z]{1}|[\\w-]{2,}))@"
-                        +"((([0-1]?[0-9]{1,2}|25[0-5]|2[0-4][0-9])\\.([0-1]?"
-                        +"[0-9]{1,2}|25[0-5]|2[0-4][0-9])\\."
-                        +"([0-1]?[0-9]{1,2}|25[0-5]|2[0-4][0-9])\\.([0-1]?"
-                        +"[0-9]{1,2}|25[0-5]|2[0-4][0-9])){1}|"
-                        +"([a-zA-Z]+[\\w-]+\\.)+[a-zA-Z]{2,4})$";
-
-        Pattern pattern = Pattern.compile(regExpn,Pattern.CASE_INSENSITIVE);
-        Matcher matcher = pattern.matcher(email);
-
-        return matcher.matches();
     }
 }
