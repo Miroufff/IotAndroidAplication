@@ -1,6 +1,5 @@
 package fr.imie.sensair.activities;
 
-import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -10,9 +9,11 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
+
+import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.DataOutputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -20,7 +21,6 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import fr.imie.sensair.R;
-import fr.imie.sensair.model.User;
 
 public class RegisterActivity extends AppCompatActivity {
 
@@ -32,7 +32,7 @@ public class RegisterActivity extends AppCompatActivity {
     ProgressBar progressBar;
     TextView responseView;
 
-    static final String API_URL = "http://iot.lacji.net/api";
+    static final String API_URL = "http://iot.lacji.net/api/customers";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,7 +56,7 @@ public class RegisterActivity extends AppCompatActivity {
         });
     }
 
-    class AsyncPostTask extends AsyncTask<Void, Void, String> {
+    private class AsyncPostTask extends AsyncTask<Void, Void, String> {
 
         Exception exception;
         String email = emailText.getText().toString();
@@ -71,38 +71,49 @@ public class RegisterActivity extends AppCompatActivity {
 
         protected String doInBackground(Void... urls) {
 
-            if (email == null && !isEmailValid(email)) {
-                return null;
-            }
+            if (email == null || !isEmailValid(email)) {
+                return getString(R.string.register_unvalid_email);
+            } else if (password == null || confirm_password == null || !confirm_password.matches(password)) {
+                return getString(R.string.register_password_not_match);
+            } else if (username == null) {
+                return getString(R.string.register_unvalid_name);
+            } else {
 
-            if (password == null && confirm_password == null && !confirm_password.matches(password)) {
-                return null;
-            }
-
-            if (username == null) {
-                return null;
-            }
-
-            try {
-                URL url = new URL(API_URL + "email=" + email);
-                HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
                 try {
-                    BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(urlConnection.getInputStream()));
-                    StringBuilder stringBuilder = new StringBuilder();
-                    String line;
-                    while ((line = bufferedReader.readLine()) != null) {
-                        stringBuilder.append(line).append("\n");
+                    URL url = new URL(API_URL);
+                    HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
+                    httpURLConnection.setDoOutput(true);
+                    httpURLConnection.setRequestMethod("POST");
+                    httpURLConnection.setRequestProperty("Content-Type", "application/json");
+                    httpURLConnection.connect();
+
+                    JSONObject jsonObject = new JSONObject();
+                    jsonObject.put("email", email);
+                    jsonObject.put("username", username);
+                    jsonObject.put("password", password);
+
+                    DataOutputStream wr = new DataOutputStream(httpURLConnection.getOutputStream());
+                    wr.writeBytes(jsonObject.toString());
+                    wr.flush();
+                    wr.close();
+
+                    BufferedReader bufferedReader;
+                    if (200 <= httpURLConnection.getResponseCode() && httpURLConnection.getResponseCode() <= 299) {
+                        bufferedReader = new BufferedReader(new InputStreamReader((httpURLConnection.getInputStream())));
+                    } else {
+                        bufferedReader  = new BufferedReader(new InputStreamReader((httpURLConnection.getErrorStream())));
                     }
-                    bufferedReader.close();
+                    StringBuilder stringBuilder = new StringBuilder();
+                    String output;
+                    while ((output = bufferedReader.readLine()) != null) {
+                        stringBuilder.append(output);
+                    }
                     return stringBuilder.toString();
+
+                } catch(Exception e) {
+                    Log.e("ERROR", e.getMessage(), e);
+                    return null;
                 }
-                finally{
-                    urlConnection.disconnect();
-                }
-            }
-            catch(Exception e) {
-                Log.e("ERROR", e.getMessage(), e);
-                return null;
             }
         }
 
@@ -132,4 +143,3 @@ public class RegisterActivity extends AppCompatActivity {
         return matcher.matches();
     }
 }
-

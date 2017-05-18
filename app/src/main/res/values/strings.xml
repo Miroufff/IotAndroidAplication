@@ -12,7 +12,8 @@
     <string name="uuid">UUID</string>
     <string name="displayName">Display Name</string>
     <string name="add_uuid">Add the uuid of the sensor</string>
-    <string name="register_not_valid_email">Email is not a valid format</string>
-    <string name="register_password_not_match">Passwords doesn\'t match</string>
-    <string name="inscrivez_vous">Inscrivez-vous</string>
+    <string name="register_unvalid_email">Email is not a valid format</string>
+    <string name="register_password_not_match">Invalid password</string>
+    <string name="register_register">Inscrivez-vous</string>
+    <string name="register_unvalid_name">Name is require</string>
 </resources>

@@ -65,7 +65,7 @@
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
             android:layout_below="@id/editTextConfirmPassword"
-            android:text="@string/inscrivez_vous" />
+            android:text="@string/register_register" />
 
         <RelativeLayout
             android:layout_width="match_parent"
