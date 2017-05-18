@@ -8,16 +8,25 @@ import java.io.Serializable;
 
 public class Sensor implements Serializable
 {
+    private Integer id;
     private String displayName;
     private String uuid;
     private String vendor;
     private String product;
-    private int version;
+    private String version;
     private boolean enable;
     private User user;
 
     public Sensor() {
         super();
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
     }
 
     public String getDisplayName() {
@@ -52,11 +61,11 @@ public class Sensor implements Serializable
         this.product = product;
     }
 
-    public int getVersion() {
+    public String getVersion() {
         return version;
     }
 
-    public void setVersion(int version) {
+    public void setVersion(String version) {
         this.version = version;
     }
 

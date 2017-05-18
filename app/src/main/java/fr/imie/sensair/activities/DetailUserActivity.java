@@ -13,17 +13,20 @@ import android.widget.Toast;
 import com.google.gson.Gson;
 
 import fr.imie.sensair.R;
+import fr.imie.sensair.adapters.UserAdapter;
 import fr.imie.sensair.model.User;
 
 public class DetailUserActivity extends AppCompatActivity {
     protected EditText firstnameEditText;
     protected EditText lastnameEditText;
-    protected EditText loginEditText;
+    protected EditText usernameEditText;
+    protected EditText emailEditText;
     protected EditText passwordEditText;
     protected EditText confirmPasswordEditText;
     protected Button saveButton;
     protected Button logoutButton;
     private SharedPreferences preferences;
+    private User currentUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,7 +35,8 @@ public class DetailUserActivity extends AppCompatActivity {
 
         this.firstnameEditText = (EditText) this.findViewById(R.id.editTextFirstname);
         this.lastnameEditText = (EditText) this.findViewById(R.id.editTextLastname);
-        this.loginEditText = (EditText) this.findViewById(R.id.editTextLogin);
+        this.usernameEditText = (EditText) this.findViewById(R.id.editTextUsername);
+        this.emailEditText = (EditText) this.findViewById(R.id.editTextEmail);
         this.passwordEditText = (EditText) this.findViewById(R.id.editTextPassword);
         this.confirmPasswordEditText = (EditText) this.findViewById(R.id.editTextConfirmPassword);
         this.saveButton = (Button) this.findViewById(R.id.buttonSave);
@@ -41,22 +45,45 @@ public class DetailUserActivity extends AppCompatActivity {
         Gson gson = new Gson();
         this.preferences = PreferenceManager.getDefaultSharedPreferences(this);
         String json = this.preferences.getString("currentUser", "");
-        User currentUser = gson.fromJson(json, User.class);
-
-        Toast.makeText(DetailUserActivity.this, currentUser.getFirstname() + " " + currentUser.getLastname(), Toast.LENGTH_LONG);
+        this.currentUser = gson.fromJson(json, User.class);
 
         this.firstnameEditText.setText(currentUser.getFirstname());
         this.lastnameEditText.setText(currentUser.getLastname());
-        this.loginEditText.setText(currentUser.getLogin());
+        this.usernameEditText.setText(currentUser.getUsername());
+        this.emailEditText.setText(currentUser.getEmail());
+
+        saveButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                currentUser.setFirstname(firstnameEditText.getText().toString());
+                currentUser.setLastname(lastnameEditText.getText().toString());
+                currentUser.setUsername(usernameEditText.getText().toString());
+                currentUser.setEmail(emailEditText.getText().toString());
+                currentUser.setPassword(passwordEditText.getText().toString());
+
+                UserAdapter userAdapter = new UserAdapter();
+
+                if (userAdapter.isUserValid(DetailUserActivity.this, currentUser, confirmPasswordEditText.getText().toString())) {
+                    // TODO - Call api to update user
+                    SharedPreferences.Editor prefsEditor = DetailUserActivity.this.preferences.edit();
+                    Gson gson = new Gson();
+                    String json = gson.toJson(currentUser);
+                    prefsEditor.putString("currentUser", json);
+                    prefsEditor.commit();
+                    Toast.makeText(DetailUserActivity.this, "User is saved", Toast.LENGTH_LONG).show();
+                }
+            }
+        });
 
         logoutButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Intent intent = new Intent(DetailUserActivity.this, LoginActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP); // To clean up all activities
                 SharedPreferences.Editor prefsEditor = DetailUserActivity.this.preferences.edit();
-                prefsEditor.remove("currentUser");
-                Intent logoutIntent = new Intent(DetailUserActivity.this, LoginActivity.class);
-                logoutIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(logoutIntent);
+                prefsEditor.putBoolean("connected", false);
+                prefsEditor.commit();
+                startActivity(intent);
                 finish();
             }
         });

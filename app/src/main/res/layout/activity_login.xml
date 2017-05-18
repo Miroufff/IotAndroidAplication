@@ -28,19 +28,19 @@
             android:text="@string/text_view_authentification" />
 
         <EditText
-            android:id="@+id/editTextLogin"
+            android:id="@+id/editTextUsername"
             android:layout_centerHorizontal="true"
             android:layout_below="@id/textViewAuthentification"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:ems="10"
-            android:hint="@string/edit_text_login"
+            android:hint="@string/edit_text_username"
             android:inputType="textPersonName" />
 
         <EditText
             android:id="@+id/editTextPassword"
             android:layout_centerHorizontal="true"
-            android:layout_below="@id/editTextLogin"
+            android:layout_below="@id/editTextUsername"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"

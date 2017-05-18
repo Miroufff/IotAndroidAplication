@@ -51,20 +51,31 @@
             />
 
         <EditText
-            android:id="@+id/editTextLogin"
+            android:id="@+id/editTextUsername"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/editTextLastname"
             android:layout_centerHorizontal="true"
             android:ems="10"
-            android:hint="@string/edit_text_login"
+            android:hint="@string/edit_text_username"
             android:inputType="textPersonName"
+            />
+
+        <EditText
+            android:id="@+id/editTextEmail"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/editTextUsername"
+            android:layout_centerHorizontal="true"
+            android:ems="10"
+            android:hint="Email"
+            android:inputType="textEmailSubject"
             />
 
         <EditText
             android:id="@+id/editTextPassword"
             android:layout_centerHorizontal="true"
-            android:layout_below="@id/editTextLogin"
+            android:layout_below="@id/editTextEmail"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:hint="@string/edit_text_password"

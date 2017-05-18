@@ -12,21 +12,33 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-
-        <activity android:name=".activities.LoginActivity">
+        <activity android:name=".activities.LoginActivity" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-        <activity android:name=".activities.RegisterActivity" />
-        <activity android:name=".activities.SensorActivity" />
-        <activity android:name=".activities.AddSensorActivity" />
-        <activity android:name=".activities.DetailSensorActivity" />
+        <activity
+            android:name=".activities.RegisterActivity"
+            android:parentActivityName=".activities.LoginActivity"
+            />
+        <activity
+            android:name=".activities.SensorActivity"
+            />
+        <activity
+            android:name=".activities.AddSensorActivity"
+            android:parentActivityName=".activities.SensorActivity"
+            />
+        <activity
+            android:name=".activities.DetailSensorActivity"
+            android:parentActivityName=".activities.SensorActivity"
+            />
+        <activity
+            android:name=".activities.DetailUserActivity"
+            android:parentActivityName=".activities.SensorActivity"
+            />
         <service android:name=".services.AirQualityExceptionService" />
-        <activity android:name=".activities.DetailUserActivity" />
     </application>
 
 </manifest>

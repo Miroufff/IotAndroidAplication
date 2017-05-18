@@ -19,29 +19,44 @@ public class LoginActivity extends AppCompatActivity {
     public static final String LOGIN_KEY = "LOGIN_KEY";
     public static final String PASSWORD_KEY = "PASSWORD_KEY";
 
-    private EditText loginEditText;
+    private EditText usernameEditText;
     private EditText passwordEditText;
     private CheckBox passwordSaveCheckBox;
     private Button connectionButton;
     private Button registerButton;
-
     private SharedPreferences prefs;
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        this.prefs = PreferenceManager.getDefaultSharedPreferences(this);
+
+        if (this.prefs.getBoolean("connected", false)) {
+            finish();
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        loginEditText = (EditText) findViewById(R.id.editTextLogin);
+        this.prefs = PreferenceManager.getDefaultSharedPreferences(this);
+
+        if (this.prefs.getBoolean("connected", false)) {
+            startActivity(new Intent(this, SensorActivity.class));
+            finish();
+        }
+
+        usernameEditText = (EditText) findViewById(R.id.editTextUsername);
         passwordEditText = (EditText) findViewById(R.id.editTextPassword);
         passwordSaveCheckBox = (CheckBox) findViewById(R.id.checkBoxPasswordSave);
         connectionButton = (Button) findViewById(R.id.buttonConnect);
         registerButton = (Button) findViewById(R.id.buttonRegister);
 
-        prefs = PreferenceManager.getDefaultSharedPreferences(this);
-
         if (prefs.contains(LOGIN_KEY) && prefs.contains(PASSWORD_KEY)) {
-            loginEditText.setText(prefs.getString(LOGIN_KEY, ""));
+            usernameEditText.setText(prefs.getString(LOGIN_KEY, ""));
             passwordEditText.setText(prefs.getString(PASSWORD_KEY, ""));
             passwordSaveCheckBox.setChecked(true);
         }
@@ -50,17 +65,17 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (passwordSaveCheckBox.isChecked()) {
-                    prefs.edit().putString(LOGIN_KEY, loginEditText.getText().toString()).apply();
+                    prefs.edit().putString(LOGIN_KEY, usernameEditText.getText().toString()).apply();
                     prefs.edit().putString(PASSWORD_KEY, passwordEditText.getText().toString()).apply();
                 } else {
                     prefs.edit().remove(LOGIN_KEY).remove(PASSWORD_KEY).apply();
                 }
 
                 // TODO - Call API to login
-                if (loginEditText.getText().toString().equals("login") && passwordEditText.getText().toString().equals("password")) {
+                if (usernameEditText.getText().toString().equals("login") && passwordEditText.getText().toString().equals("password")) {
                     User currentUser = new User();
                     currentUser
-                        .setLogin(loginEditText.getText().toString())
+                        .setUsername(usernameEditText.getText().toString())
                         .setPassword(passwordEditText.getText().toString())
                         .setFirstname("Sylvain")
                         .setLastname("Mirouf");
@@ -69,8 +84,9 @@ public class LoginActivity extends AppCompatActivity {
                     Gson gson = new Gson();
                     String json = gson.toJson(currentUser);
                     prefsEditor.putString("currentUser", json);
+                    prefsEditor.putBoolean("connected", true);
                     prefsEditor.commit();
-
+                    finish();
                     startActivity(new Intent(LoginActivity.this, SensorActivity.class));
                 }
             }
