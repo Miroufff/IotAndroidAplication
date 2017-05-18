@@ -20,6 +20,7 @@ import org.json.JSONObject;
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
+import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.ObjectOutputStream;
 import java.net.HttpURLConnection;
@@ -33,14 +34,12 @@ import fr.imie.sensair.model.User;
 
 public class RegisterActivity extends AppCompatActivity {
 
-    private SharedPreferences prefs;
     private EditText firstnameText;
     private EditText lastnameText;
     private EditText usernameText;
     private EditText emailText;
     private EditText passwordText;
     private EditText confirmPasswordText;
-    private Button registerButton;
 
     private ProgressBar progressBar;
     private TextView responseView;
@@ -52,27 +51,27 @@ public class RegisterActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
 
-        this.prefs = PreferenceManager.getDefaultSharedPreferences(this);
-
-        if (this.prefs.getBoolean("connected", false)) {
-            finish();
-            return;
-        }
-
         firstnameText = (EditText) findViewById(R.id.editTextFirstname);
         lastnameText = (EditText) findViewById(R.id.editTextLastname);
         usernameText = (EditText) findViewById(R.id.editTextUsername);
         emailText = (EditText) findViewById(R.id.editTextEmail);
         passwordText = (EditText) findViewById(R.id.editTextPassword);
         confirmPasswordText = (EditText) findViewById(R.id.editTextConfirmPassword);
-        registerButton = (Button) findViewById(R.id.buttonRegister);
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
         responseView = (TextView) findViewById(R.id.responseView);
+
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
+        Button registerButton = (Button) findViewById(R.id.buttonRegister);
+
+        if (prefs.getBoolean("connected", false)) {
+            finish();
+            return;
+        }
 
         registerButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new AsyncPostTask().execute();
+            new AsyncPostTask().execute();
             }
         });
     }
@@ -100,61 +99,47 @@ public class RegisterActivity extends AppCompatActivity {
                 return getString(R.string.register_unvalid_name);
             } else {
 
-                try {
-                    URL url = new URL(API_POST_URL);
-                    HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
-                    httpURLConnection.setDoOutput(true);
-                    httpURLConnection.setRequestMethod("POST");
-                    httpURLConnection.setRequestProperty("Content-Type", "application/json");
-                    httpURLConnection.connect();
+                User currentUser = new User();
+                currentUser
+                    .setFirstname(firstname)
+                    .setLastname(lastname)
+                    .setUsername(username)
+                    .setEmail(email)
+                    .setPassword(password);
 
-                    User currentUser = new User();
-                    currentUser
-                        .setFirstname(firstname)
-                        .setLastname(lastname)
-                        .setUsername(username)
-                        .setEmail(email)
-                        .setPassword(password);
+                UserAdapter userAdapter = new UserAdapter();
+                if (userAdapter.isUserValid(RegisterActivity.this, currentUser, confirm_password)) {
+                    try {
+                        HttpURLConnection connection = httpConnection(new URL(API_POST_URL), "POST");
 
-                    UserAdapter userAdapter = new UserAdapter();
-                    if (userAdapter.isUserValid(RegisterActivity.this, currentUser, confirm_password))
-                    {
                         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(RegisterActivity.this);
                         SharedPreferences.Editor prefsEditor = prefs.edit();
                         Gson gson = new Gson();
-                        String json = gson.toJson(currentUser);
-                        prefsEditor.putString("currentUser", json);
+                        String jsonCurrentUser = gson.toJson(currentUser);
+
+                        DataOutputStream outputStream = new DataOutputStream(connection.getOutputStream());
+                        outputStream.writeBytes(jsonCurrentUser);
+                        outputStream.flush();
+                        outputStream.close();
+
+                        String httpResponse = serializeHttpResponse(connection);
+
+                        prefsEditor.putString("currentUser", jsonCurrentUser);
                         prefsEditor.putBoolean("connected", true);
                         prefsEditor.commit();
                         finish();
+
                         startActivity(new Intent(RegisterActivity.this, SensorActivity.class));
-                    }
 
-                    //Serialisation of object
-                    ByteArrayOutputStream objectStream = new ByteArrayOutputStream();
-                    ObjectOutputStream outputStream = new ObjectOutputStream(objectStream);
-                    outputStream.writeObject(currentUser);
-                    outputStream.flush();
-                    outputStream.close();
-
-                    BufferedReader bufferedReader;
-                    if (200 <= httpURLConnection.getResponseCode() && httpURLConnection.getResponseCode() <= 299) {
-                        bufferedReader = new BufferedReader(new InputStreamReader((httpURLConnection.getInputStream())));
-                    } else {
-                        bufferedReader  = new BufferedReader(new InputStreamReader((httpURLConnection.getErrorStream())));
+                    } catch (Exception e) {
+                        Log.e("ERROR", e.getMessage(), e);
+                        return null;
                     }
-                    StringBuilder stringBuilder = new StringBuilder();
-                    String output;
-                    while ((output = bufferedReader.readLine()) != null) {
-                        stringBuilder.append(output);
-                    }
-                    return stringBuilder.toString();
-
-                } catch(Exception e) {
-                    Log.e("ERROR", e.getMessage(), e);
+                } else {
                     return null;
                 }
             }
+            return null;
         }
 
         protected void onPostExecute(String response) {
@@ -167,15 +152,40 @@ public class RegisterActivity extends AppCompatActivity {
         }
     }
 
+    public HttpURLConnection httpConnection (URL url, String method) throws IOException {
+        HttpURLConnection connection= (HttpURLConnection) url.openConnection();
+        connection.setDoOutput(true);
+        connection.setRequestMethod(method);
+        connection.setRequestProperty("Content-Type", "application/json");
+        connection.connect();
+
+        return connection;
+    }
+
+    public String serializeHttpResponse(HttpURLConnection connection) throws IOException {
+        BufferedReader bufferedReader;
+        if (200 <= connection.getResponseCode() && connection.getResponseCode() <= 299) {
+            bufferedReader = new BufferedReader(new InputStreamReader((connection.getInputStream())));
+        } else {
+            bufferedReader  = new BufferedReader(new InputStreamReader((connection.getErrorStream())));
+        }
+        StringBuilder stringBuilder = new StringBuilder();
+        String output;
+        while ((output = bufferedReader.readLine()) != null) {
+            stringBuilder.append(output);
+        }
+        return stringBuilder.toString();
+    }
+
     public boolean isEmailValid(String email)
     {
         String regExpn =
-            "^(([\\w-]+\\.)+[\\w-]+|([a-zA-Z]{1}|[\\w-]{2,}))@"
-                +"((([0-1]?[0-9]{1,2}|25[0-5]|2[0-4][0-9])\\.([0-1]?"
-                +"[0-9]{1,2}|25[0-5]|2[0-4][0-9])\\."
-                +"([0-1]?[0-9]{1,2}|25[0-5]|2[0-4][0-9])\\.([0-1]?"
-                +"[0-9]{1,2}|25[0-5]|2[0-4][0-9])){1}|"
-                +"([a-zA-Z]+[\\w-]+\\.)+[a-zA-Z]{2,4})$";
+                "^(([\\w-]+\\.)+[\\w-]+|([a-zA-Z]{1}|[\\w-]{2,}))@"
+                        +"((([0-1]?[0-9]{1,2}|25[0-5]|2[0-4][0-9])\\.([0-1]?"
+                        +"[0-9]{1,2}|25[0-5]|2[0-4][0-9])\\."
+                        +"([0-1]?[0-9]{1,2}|25[0-5]|2[0-4][0-9])\\.([0-1]?"
+                        +"[0-9]{1,2}|25[0-5]|2[0-4][0-9])){1}|"
+                        +"([a-zA-Z]+[\\w-]+\\.)+[a-zA-Z]{2,4})$";
 
         Pattern pattern = Pattern.compile(regExpn,Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(email);
