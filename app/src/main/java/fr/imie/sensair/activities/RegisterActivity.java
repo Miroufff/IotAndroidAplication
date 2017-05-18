@@ -18,8 +18,10 @@ import com.google.gson.Gson;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.InputStreamReader;
+import java.io.ObjectOutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.regex.Matcher;
@@ -30,24 +32,20 @@ import fr.imie.sensair.adapters.UserAdapter;
 import fr.imie.sensair.model.User;
 
 public class RegisterActivity extends AppCompatActivity {
-    protected EditText firstnameEditText;
-    protected EditText lastnameEditText;
-    protected EditText usernameEditText;
-    protected EditText emailEditText;
-    protected EditText passwordEditText;
-    protected EditText confirmPasswordEditText;
-    private Button registerButton;
+
     private SharedPreferences prefs;
+    private EditText firstnameText;
+    private EditText lastnameText;
+    private EditText usernameText;
+    private EditText emailText;
+    private EditText passwordText;
+    private EditText confirmPasswordText;
+    private Button registerButton;
 
-    EditText usernameText;
-    EditText emailText;
-    EditText passwordText;
-    EditText confirmPasswordText;
-    Button registerButton;
-    ProgressBar progressBar;
-    TextView responseView;
+    private ProgressBar progressBar;
+    private TextView responseView;
 
-    static final String API_URL = "http://iot.lacji.net/api/customers";
+    static final String API_POST_URL = "http://iot.lacji.net/api/customers";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,21 +56,18 @@ public class RegisterActivity extends AppCompatActivity {
 
         if (this.prefs.getBoolean("connected", false)) {
             finish();
-
             return;
         }
 
-        this.firstnameEditText = (EditText) this.findViewById(R.id.editTextFirstname);
-        this.lastnameEditText = (EditText) this.findViewById(R.id.editTextLastname);
-        this.usernameEditText = (EditText) this.findViewById(R.id.editTextUsername);
-        this.emailEditText = (EditText) this.findViewById(R.id.editTextEmail);
-        this.passwordEditText = (EditText) this.findViewById(R.id.editTextPassword);
-        this.confirmPasswordEditText = (EditText) this.findViewById(R.id.editTextConfirmPassword);
-        this.registerButton = (Button) this.findViewById(R.id.buttonRegister);
-
-        registerButton.setOnClickListener(new View.OnClickListener() {
-        responseView = (TextView) findViewById(R.id.responseView);
+        firstnameText = (EditText) findViewById(R.id.editTextFirstname);
+        lastnameText = (EditText) findViewById(R.id.editTextLastname);
+        usernameText = (EditText) findViewById(R.id.editTextUsername);
+        emailText = (EditText) findViewById(R.id.editTextEmail);
+        passwordText = (EditText) findViewById(R.id.editTextPassword);
+        confirmPasswordText = (EditText) findViewById(R.id.editTextConfirmPassword);
+        registerButton = (Button) findViewById(R.id.buttonRegister);
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
+        responseView = (TextView) findViewById(R.id.responseView);
 
         registerButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -83,21 +78,10 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     private class AsyncPostTask extends AsyncTask<Void, Void, String> {
-                UserAdapter userAdapter = new UserAdapter();
-
-                if (userAdapter.isUserValid(RegisterActivity.this, currentUser, confirmPasswordEditText.getText().toString())) {
-                    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(RegisterActivity.this);
-                    SharedPreferences.Editor prefsEditor = prefs.edit();
-                    Gson gson = new Gson();
-                    String json = gson.toJson(currentUser);
-                    prefsEditor.putString("currentUser", json);
-                    prefsEditor.putBoolean("connected", true);
-                    prefsEditor.commit();
-                    finish();
-                    startActivity(new Intent(RegisterActivity.this, SensorActivity.class));
-        Exception exception;
-        String email = emailText.getText().toString();
+        String firstname = firstnameText.getText().toString();
+        String lastname = lastnameText.getText().toString();
         String username = usernameText.getText().toString();
+        String email = emailText.getText().toString();
         String password = passwordText.getText().toString();
         String confirm_password = confirmPasswordText.getText().toString();
 
@@ -117,22 +101,41 @@ public class RegisterActivity extends AppCompatActivity {
             } else {
 
                 try {
-                    URL url = new URL(API_URL);
+                    URL url = new URL(API_POST_URL);
                     HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
                     httpURLConnection.setDoOutput(true);
                     httpURLConnection.setRequestMethod("POST");
                     httpURLConnection.setRequestProperty("Content-Type", "application/json");
                     httpURLConnection.connect();
 
-                    JSONObject jsonObject = new JSONObject();
-                    jsonObject.put("email", email);
-                    jsonObject.put("username", username);
-                    jsonObject.put("password", password);
+                    User currentUser = new User();
+                    currentUser
+                        .setFirstname(firstname)
+                        .setLastname(lastname)
+                        .setUsername(username)
+                        .setEmail(email)
+                        .setPassword(password);
 
-                    DataOutputStream wr = new DataOutputStream(httpURLConnection.getOutputStream());
-                    wr.writeBytes(jsonObject.toString());
-                    wr.flush();
-                    wr.close();
+                    UserAdapter userAdapter = new UserAdapter();
+                    if (userAdapter.isUserValid(RegisterActivity.this, currentUser, confirm_password))
+                    {
+                        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(RegisterActivity.this);
+                        SharedPreferences.Editor prefsEditor = prefs.edit();
+                        Gson gson = new Gson();
+                        String json = gson.toJson(currentUser);
+                        prefsEditor.putString("currentUser", json);
+                        prefsEditor.putBoolean("connected", true);
+                        prefsEditor.commit();
+                        finish();
+                        startActivity(new Intent(RegisterActivity.this, SensorActivity.class));
+                    }
+
+                    //Serialisation of object
+                    ByteArrayOutputStream objectStream = new ByteArrayOutputStream();
+                    ObjectOutputStream outputStream = new ObjectOutputStream(objectStream);
+                    outputStream.writeObject(currentUser);
+                    outputStream.flush();
+                    outputStream.close();
 
                     BufferedReader bufferedReader;
                     if (200 <= httpURLConnection.getResponseCode() && httpURLConnection.getResponseCode() <= 299) {
