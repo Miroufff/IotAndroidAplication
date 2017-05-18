@@ -33,16 +33,12 @@ public class UserAdapter {
             return false;
         }
 
-        if (!user.getPassword().equals("")) {
+        if (user.getPassword().length() > 0) {
             if (!user.getPassword().matches(confirmPassword)) {
                 Toast.makeText(context, "Passwords do not match", Toast.LENGTH_SHORT).show();
 
                 return false;
             }
-        } else {
-            Toast.makeText(context, "Password cannot be empty", Toast.LENGTH_SHORT).show();
-
-            return false;
         }
 
         return true;

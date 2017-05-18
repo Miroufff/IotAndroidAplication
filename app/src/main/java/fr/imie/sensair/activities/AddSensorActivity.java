@@ -35,11 +35,11 @@ public class AddSensorActivity extends AppCompatActivity {
                     sensor.setEnable(true);
                     sensor.setVendor("Raspberry");
                     sensor.setProduct("Pi");
-                    sensor.setVersion(3);
+                    sensor.setVersion("3");
                     sensor.setUuid("5151351-5151-zf4zf-54zfzf-65ezf4zef");
 
                 } else {
-                    Toast.makeText(AddSensorActivity.this, "This sensor is not register.", Toast.LENGTH_LONG);
+                    Toast.makeText(AddSensorActivity.this, "This sensor is not register.", Toast.LENGTH_LONG).show();
                 }
             }
         });

@@ -33,7 +33,6 @@ public class LoginActivity extends AppCompatActivity {
         this.prefs = PreferenceManager.getDefaultSharedPreferences(this);
 
         if (this.prefs.getBoolean("connected", false)) {
-            startActivity(new Intent(this, SensorActivity.class));
             finish();
         }
     }

@@ -50,6 +50,7 @@ public class DetailUserActivity extends AppCompatActivity {
         this.firstnameEditText.setText(currentUser.getFirstname());
         this.lastnameEditText.setText(currentUser.getLastname());
         this.usernameEditText.setText(currentUser.getUsername());
+        this.emailEditText.setText(currentUser.getEmail());
 
         saveButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -64,7 +65,12 @@ public class DetailUserActivity extends AppCompatActivity {
 
                 if (userAdapter.isUserValid(DetailUserActivity.this, currentUser, confirmPasswordEditText.getText().toString())) {
                     // TODO - Call api to update user
-
+                    SharedPreferences.Editor prefsEditor = DetailUserActivity.this.preferences.edit();
+                    Gson gson = new Gson();
+                    String json = gson.toJson(currentUser);
+                    prefsEditor.putString("currentUser", json);
+                    prefsEditor.commit();
+                    Toast.makeText(DetailUserActivity.this, "User is saved", Toast.LENGTH_LONG).show();
                 }
             }
         });

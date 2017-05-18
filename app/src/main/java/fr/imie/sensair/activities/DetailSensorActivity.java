@@ -21,6 +21,7 @@ import com.android.volley.toolbox.StringRequest;
 import org.json.JSONObject;
 
 import fr.imie.sensair.R;
+import fr.imie.sensair.model.Sensor;
 
 public class DetailSensorActivity extends AppCompatActivity {
     protected TextView displayNameTextView;
@@ -41,7 +42,24 @@ public class DetailSensorActivity extends AppCompatActivity {
         this.grafanaWebView = (WebView) this.findViewById(R.id.webViewGrafana);
 
         this.grafanaWebView.loadUrl("https://github.com");
-        //callNetwork();
+
+        // TODO - Call api to retrieve a sensor
+        Integer id = this.getIntent().getIntExtra("idSensor", 0);
+        Sensor sensor1 = new Sensor();
+        sensor1.setId(id);
+        sensor1.setDisplayName("Home");
+        sensor1.setEnable(true);
+        sensor1.setVendor("Raspberry");
+        sensor1.setProduct("Pi");
+        sensor1.setVersion("3");
+        sensor1.setUuid("c10d2fc4-9361-4c24-91f4-c355379cbf44");
+
+        this.displayNameTextView.setText(sensor1.getDisplayName());
+        this.vendorTextView.setText(sensor1.getVendor());
+        this.productTextView.setText(sensor1.getProduct());
+        this.versionTextView.setText(sensor1.getVersion());
+
+        Toast.makeText(this, sensor1.getId().toString(), Toast.LENGTH_SHORT).show();
     }
 
     private void callNetwork() {

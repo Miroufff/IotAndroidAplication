@@ -17,6 +17,7 @@ import fr.imie.sensair.model.Sensor;
 import fr.imie.sensair.model.User;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by mirouf on 12/04/17.
@@ -24,9 +25,9 @@ import java.util.ArrayList;
 
 public class SensorAdapter extends ArrayAdapter<Sensor> {
     private final Context context;
-    private final ArrayList<Sensor> sensors;
-    //tweets est la liste des models à afficher
-    public SensorAdapter(Context context, ArrayList<Sensor> sensors) {
+    private final List<Sensor> sensors;
+
+    public SensorAdapter(Context context, List<Sensor> sensors) {
         super(context, 0, sensors);
         this.context = context;
         this.sensors = sensors;
@@ -71,8 +72,8 @@ public class SensorAdapter extends ArrayAdapter<Sensor> {
                 // TODO - Send mqtt msg to stop send data
                 SensorAdapter.this.sensors.get((Integer) arg0.getTag()).setEnable(((Switch) arg0).isChecked());
                 Toast.makeText(SensorAdapter.this.context,
-                        "Sensor enable is " + SensorAdapter.this.sensors.get((Integer) arg0.getTag()).isEnable(),
-                        Toast.LENGTH_LONG
+                    "Sensor enable is " + SensorAdapter.this.sensors.get((Integer) arg0.getTag()).isEnable(),
+                    Toast.LENGTH_LONG
                 ).show();
             }
         });
