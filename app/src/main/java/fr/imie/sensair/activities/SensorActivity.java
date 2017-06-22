@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.preference.PreferenceManager;
@@ -16,25 +17,44 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.toolbox.JsonArrayRequest;
+import com.android.volley.toolbox.RequestFuture;
+import com.android.volley.toolbox.Volley;
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import fr.imie.sensair.R;
 import fr.imie.sensair.adapters.SensorAdapter;
 import fr.imie.sensair.model.Sensor;
 import fr.imie.sensair.model.User;
+import fr.imie.sensair.properties.ApiProperties;
 import fr.imie.sensair.services.AirQualityExceptionService;
 
 public class SensorActivity extends AppCompatActivity {
     protected Button addSensorButton;
     protected Button detailUserButton;
     protected ListView sensorListView;
+
+    private RequestQueue queue;
     private SharedPreferences prefs;
     private User currentUser;
     private SensorAdapter sensorAdapter;
-    private List<Sensor> sensors;
+    private ArrayList<Sensor> sensors = new ArrayList<>();
 
     @Override
     protected void onResume() {
@@ -62,21 +82,58 @@ public class SensorActivity extends AppCompatActivity {
 
         Gson gson = new Gson();
         this.prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        String json = this.prefs.getString("currentUser", "");
+        final String json = this.prefs.getString("currentUser", "");
         this.currentUser = gson.fromJson(json, User.class);
 
         this.addSensorButton = (Button) this.findViewById(R.id.addSensorButton);
         this.detailUserButton = (Button) this.findViewById(R.id.detailUserButton);
         this.sensorListView = (ListView) findViewById(R.id.listView);
 
-        this.sensors = retrieveSensors();
+        //SensorApiService sensorApiService = new SensorApiService(this, this.currentUser);
+        //JSONArray jsonObject = sensorApiService.getSensorsByUser();
 
-        this.sensorAdapter = new SensorAdapter(SensorActivity.this, sensors);
-        this.sensorListView.setAdapter(this.sensorAdapter);
+        this.queue = Volley.newRequestQueue(this);
+        Thread t = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                AsyncTaskSensors threadA = new AsyncTaskSensors();
 
-        Intent intent = new Intent(this, AirQualityExceptionService.class);
+                try {
+                    JSONArray jsonArray = threadA.execute().get();
+                    if (jsonArray != null) {
+                        for (int i = 0; i < jsonArray.length(); i++) {
+                            JSONObject jsonObject = jsonArray.getJSONObject(i);
+                            Sensor sensor = new Sensor();
+                            sensor.setId(jsonObject.getInt("id"));
+                            sensor.setDisplayName(jsonObject.getString("displayname"));
+                            sensor.setUuid(jsonObject.getString("uuid"));
+                            sensor.setVendor(jsonObject.getString("vendor"));
+                            sensor.setProduct(jsonObject.getString("product"));
+                            sensor.setVersion(jsonObject.getString("version"));
+                            sensor.setEnable(jsonObject.getBoolean("enable"));
+                            sensor.setUser(SensorActivity.this.currentUser);
+                            SensorActivity.this.sensors.add(sensor);
+                        }
+
+                        SensorActivity.this.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                final SensorAdapter adapter = new SensorAdapter(SensorActivity.this, SensorActivity.this.sensors);
+                                SensorActivity.this.sensorListView.setAdapter(adapter);
+                            }
+                        });
+                    }
+                } catch (InterruptedException | ExecutionException | JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+        t.start();
+
+        /*Intent intent = new Intent(this, AirQualityExceptionService.class);
         intent.putExtra("foo", "bar");
-        this.bindService(intent, SensorActivity.this.connection, Context.BIND_AUTO_CREATE);
+        this.bindService(intent, SensorActivity.this.connection, Context.BIND_AUTO_CREATE);*/
 
         this.sensorListView.setOnItemClickListener(new AdapterView.OnItemClickListener(){
             @Override
@@ -93,7 +150,7 @@ public class SensorActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(SensorActivity.this, AddSensorActivity.class));
-                Toast.makeText(SensorActivity.this, "Value : " + SensorActivity.this.service.test(), Toast.LENGTH_LONG).show();
+                //Toast.makeText(SensorActivity.this, "Value : " + SensorActivity.this.service.test(), Toast.LENGTH_LONG).show();
             }
         });
 
@@ -101,12 +158,12 @@ public class SensorActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 startActivity(new Intent(SensorActivity.this, DetailUserActivity.class));
-                Toast.makeText(SensorActivity.this, "Value : " + SensorActivity.this.service.test(), Toast.LENGTH_LONG).show();
+                //Toast.makeText(SensorActivity.this, "Value : " + SensorActivity.this.service.test(), Toast.LENGTH_LONG).show();
             }
         });
     }
 
-    private AirQualityExceptionService service;
+    /*private AirQualityExceptionService service;
 
     private ServiceConnection connection = new ServiceConnection() {
         @Override
@@ -119,33 +176,29 @@ public class SensorActivity extends AppCompatActivity {
         public void onServiceDisconnected(ComponentName name) {
             SensorActivity.this.service = null;
         }
-    };
+    };*/
 
-    private List<Sensor> retrieveSensors() {
-        // TODO - Call api to retrieve sensor
-        List<Sensor> sensors = new ArrayList<>();
+    private class AsyncTaskSensors extends AsyncTask<Void, Void, JSONArray> {
+        @Override
+        protected JSONArray doInBackground(Void... params) {
+            final RequestFuture<JSONArray> future = RequestFuture.newFuture();
+            JsonArrayRequest request = new JsonArrayRequest(
+                Request.Method.GET,
+                ApiProperties.getInstance().addressServer + ApiProperties.getInstance().apiPath + "/sensors?filters[customer]=" + SensorActivity.this.currentUser.getId(),
+                null,
+                future,
+                future
+            );
 
-        Sensor sensor1 = new Sensor();
-        sensor1.setDisplayName("Home");
-        sensor1.setEnable(true);
-        sensor1.setVendor("Raspberry");
-        sensor1.setProduct("Pi");
-        sensor1.setVersion("3");
-        sensor1.setUuid("c10d2fc4-9361-4c24-91f4-c355379cbf44");
-        sensor1.setUser(this.currentUser);
+            SensorActivity.this.queue.add(request);
 
-        Sensor sensor2 = new Sensor();
-        sensor2.setDisplayName("Work");
-        sensor2.setEnable(false);
-        sensor2.setVendor("Raspberry");
-        sensor2.setProduct("Pi");
-        sensor2.setVersion("2");
-        sensor2.setUuid("086edadc-feaa-495d-bfc3-58d905d3ddcb");
-        sensor2.setUser(this.currentUser);
+            try {
+                return future.get(5, TimeUnit.SECONDS);
+            } catch (InterruptedException | ExecutionException | TimeoutException e) {
+                e.printStackTrace();
+            }
 
-        sensors.add(sensor1);
-        sensors.add(sensor2);
-
-        return sensors;
+            return null;
+        }
     }
 }

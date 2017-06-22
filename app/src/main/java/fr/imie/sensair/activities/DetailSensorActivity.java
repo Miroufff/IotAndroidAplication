@@ -17,11 +17,13 @@ import com.android.volley.toolbox.DiskBasedCache;
 import com.android.volley.toolbox.HurlStack;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 
 import org.json.JSONObject;
 
 import fr.imie.sensair.R;
 import fr.imie.sensair.model.Sensor;
+import fr.imie.sensair.properties.ApiProperties;
 
 public class DetailSensorActivity extends AppCompatActivity {
     protected TextView displayNameTextView;
@@ -60,40 +62,5 @@ public class DetailSensorActivity extends AppCompatActivity {
         this.versionTextView.setText(sensor1.getVersion());
 
         Toast.makeText(this, sensor1.getId().toString(), Toast.LENGTH_SHORT).show();
-    }
-
-    private void callNetwork() {
-        Cache cache = new DiskBasedCache(this.getCacheDir(), 1024*1024);
-        Network network = new BasicNetwork(new HurlStack());
-        RequestQueue queue = new RequestQueue(cache, network);
-        queue.start();
-
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.GET, "http://ip.jsontest.com", null, new Response.Listener<JSONObject>() {
-            @Override
-            public void onResponse(JSONObject response) {
-                Toast.makeText(DetailSensorActivity.this, "Response from API : " + response, Toast.LENGTH_LONG).show();
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Toast.makeText(DetailSensorActivity.this, "Error from api", Toast.LENGTH_LONG).show();
-            }
-        });
-
-        StringRequest request = new StringRequest(Request.Method.GET, "https://github.com", new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                Toast.makeText(DetailSensorActivity.this, "Response from API : " + response, Toast.LENGTH_LONG).show();
-                DetailSensorActivity.this.grafanaWebView.loadData(response, "text/html", null);
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Toast.makeText(DetailSensorActivity.this, "Error from api", Toast.LENGTH_LONG).show();
-            }
-        });
-
-        //queue.add(jsonObjectRequest);
-        queue.add(request);
     }
 }

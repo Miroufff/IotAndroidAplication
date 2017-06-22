@@ -9,11 +9,30 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
 
 import fr.imie.sensair.R;
+import fr.imie.sensair.api.UserApiService;
 import fr.imie.sensair.model.User;
+import fr.imie.sensair.properties.ApiProperties;
 
 public class LoginActivity extends AppCompatActivity {
     public static final String LOGIN_KEY = "LOGIN_KEY";
@@ -71,24 +90,8 @@ public class LoginActivity extends AppCompatActivity {
                     prefs.edit().remove(LOGIN_KEY).remove(PASSWORD_KEY).apply();
                 }
 
-                // TODO - Call API to login
-                if (usernameEditText.getText().toString().equals("login") && passwordEditText.getText().toString().equals("password")) {
-                    User currentUser = new User();
-                    currentUser
-                        .setUsername(usernameEditText.getText().toString())
-                        .setPassword(passwordEditText.getText().toString())
-                        .setFirstname("Sylvain")
-                        .setLastname("Mirouf");
-
-                    SharedPreferences.Editor prefsEditor = prefs.edit();
-                    Gson gson = new Gson();
-                    String json = gson.toJson(currentUser);
-                    prefsEditor.putString("currentUser", json);
-                    prefsEditor.putBoolean("connected", true);
-                    prefsEditor.commit();
-                    finish();
-                    startActivity(new Intent(LoginActivity.this, SensorActivity.class));
-                }
+                UserApiService userApiService = new UserApiService();
+                userApiService.login(usernameEditText.getText().toString(), passwordEditText.getText().toString(), LoginActivity.this);
             }
         });
 

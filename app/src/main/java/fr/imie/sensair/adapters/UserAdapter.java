@@ -3,6 +3,7 @@ package fr.imie.sensair.adapters;
 import android.content.Context;
 import android.widget.Toast;
 
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -14,7 +15,7 @@ import fr.imie.sensair.model.User;
  */
 
 public class UserAdapter {
-    public boolean isUserValid(Context context, User user, String confirmPassword) {
+    public boolean isUserValid(Context context, User user, String password, String confirmPassword, Boolean isUpdateAction) {
         if (user.getFirstname().equals("")) {
             Toast.makeText(context, "Firstname cannot be empty", Toast.LENGTH_SHORT).show();
 
@@ -33,18 +34,30 @@ public class UserAdapter {
             return false;
         }
 
-        if (user.getPassword().length() > 0) {
-            if (!user.getPassword().matches(confirmPassword)) {
-                Toast.makeText(context, "Passwords do not match", Toast.LENGTH_SHORT).show();
+        if (!isUpdateAction) {
+            if (password.length() > 4) {
+                if (!Objects.equals(password, confirmPassword)) {
+                    Toast.makeText(context, "Passwords do not match", Toast.LENGTH_SHORT).show();
 
-                return false;
+                    return false;
+                }
+            } else {
+                Toast.makeText(context, "Passwords length is too short", Toast.LENGTH_SHORT).show();
+            }
+        } else {
+            if (password.length() > 0) {
+                if (!Objects.equals(password, confirmPassword)) {
+                    Toast.makeText(context, "Passwords do not match", Toast.LENGTH_SHORT).show();
+
+                    return false;
+                }
             }
         }
 
         return true;
     }
 
-    public boolean isEmailValid(String email)
+    private boolean isEmailValid(String email)
     {
         String regExpn = "^(([\\w-]+\\.)+[\\w-]+|([a-zA-Z]{1}|[\\w-]{2,}))@"
                         +"((([0-1]?[0-9]{1,2}|25[0-5]|2[0-4][0-9])\\.([0-1]?"

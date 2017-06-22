@@ -5,19 +5,38 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.android.volley.NetworkResponse;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.VolleyLog;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.google.gson.Gson;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import fr.imie.sensair.R;
 import fr.imie.sensair.adapters.UserAdapter;
+import fr.imie.sensair.api.UserApiService;
 import fr.imie.sensair.model.User;
+import fr.imie.sensair.properties.ApiProperties;
 
 public class RegisterActivity extends AppCompatActivity {
     protected EditText firstnameEditText;
@@ -58,21 +77,13 @@ public class RegisterActivity extends AppCompatActivity {
                     .setFirstname(firstnameEditText.getText().toString())
                     .setLastname(lastnameEditText.getText().toString())
                     .setUsername(usernameEditText.getText().toString())
-                    .setEmail(emailEditText.getText().toString())
-                    .setPassword(passwordEditText.getText().toString());
+                    .setEmail(emailEditText.getText().toString());
 
                 UserAdapter userAdapter = new UserAdapter();
 
-                if (userAdapter.isUserValid(RegisterActivity.this, currentUser, confirmPasswordEditText.getText().toString())) {
-                    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(RegisterActivity.this);
-                    SharedPreferences.Editor prefsEditor = prefs.edit();
-                    Gson gson = new Gson();
-                    String json = gson.toJson(currentUser);
-                    prefsEditor.putString("currentUser", json);
-                    prefsEditor.putBoolean("connected", true);
-                    prefsEditor.commit();
-                    finish();
-                    startActivity(new Intent(RegisterActivity.this, SensorActivity.class));
+                if (userAdapter.isUserValid(RegisterActivity.this, currentUser, passwordEditText.getText().toString(), confirmPasswordEditText.getText().toString(), false)) {
+                    UserApiService userApiService = new UserApiService();
+                    userApiService.register(currentUser, passwordEditText.getText().toString(), RegisterActivity.this);
                 }
             }
         });

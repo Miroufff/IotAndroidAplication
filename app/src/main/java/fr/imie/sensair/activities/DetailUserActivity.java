@@ -14,6 +14,7 @@ import com.google.gson.Gson;
 
 import fr.imie.sensair.R;
 import fr.imie.sensair.adapters.UserAdapter;
+import fr.imie.sensair.api.UserApiService;
 import fr.imie.sensair.model.User;
 
 public class DetailUserActivity extends AppCompatActivity {
@@ -59,18 +60,13 @@ public class DetailUserActivity extends AppCompatActivity {
                 currentUser.setLastname(lastnameEditText.getText().toString());
                 currentUser.setUsername(usernameEditText.getText().toString());
                 currentUser.setEmail(emailEditText.getText().toString());
-                currentUser.setPassword(passwordEditText.getText().toString());
 
                 UserAdapter userAdapter = new UserAdapter();
 
-                if (userAdapter.isUserValid(DetailUserActivity.this, currentUser, confirmPasswordEditText.getText().toString())) {
+                if (userAdapter.isUserValid(DetailUserActivity.this, currentUser, passwordEditText.getText().toString(), confirmPasswordEditText.getText().toString(), true)) {
                     // TODO - Call api to update user
-                    SharedPreferences.Editor prefsEditor = DetailUserActivity.this.preferences.edit();
-                    Gson gson = new Gson();
-                    String json = gson.toJson(currentUser);
-                    prefsEditor.putString("currentUser", json);
-                    prefsEditor.commit();
-                    Toast.makeText(DetailUserActivity.this, "User is saved", Toast.LENGTH_LONG).show();
+                    UserApiService userApiService = new UserApiService();
+                    userApiService.update(currentUser, passwordEditText.getText().toString(), DetailUserActivity.this, DetailUserActivity.this.preferences.edit());
                 }
             }
         });
