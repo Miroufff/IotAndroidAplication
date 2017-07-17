@@ -15,8 +15,8 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <TextView
-            android:layout_centerHorizontal="true"
             android:id="@+id/textViewAuthentification"
+            android:layout_centerHorizontal="true"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
@@ -25,8 +25,7 @@
             android:layout_marginRight="8dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
-            android:text="My informations"
-            />
+            android:text="My informations" />
 
         <EditText
             android:id="@+id/editTextFirstname"
@@ -36,19 +35,17 @@
             android:layout_centerHorizontal="true"
             android:ems="10"
             android:hint="Firstname"
-            android:inputType="textPersonName"
-            />
+            android:inputType="textPersonName" />
 
         <EditText
             android:id="@+id/editTextLastname"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/editTextFirstname"
+            android:layout_below="@id/editTextFirstname"
             android:layout_centerHorizontal="true"
             android:ems="10"
             android:inputType="textPersonName"
-            android:hint="Lastname"
-            />
+            android:hint="Lastname" />
 
         <EditText
             android:id="@+id/editTextUsername"
@@ -58,8 +55,7 @@
             android:layout_centerHorizontal="true"
             android:ems="10"
             android:hint="@string/edit_text_username"
-            android:inputType="textPersonName"
-            />
+            android:inputType="textPersonName" />
 
         <EditText
             android:id="@+id/editTextEmail"
@@ -69,8 +65,7 @@
             android:layout_centerHorizontal="true"
             android:ems="10"
             android:hint="Email"
-            android:inputType="textEmailSubject"
-            />
+            android:inputType="textEmailAddress" />
 
         <EditText
             android:id="@+id/editTextPassword"
@@ -80,7 +75,7 @@
             android:layout_height="wrap_content"
             android:hint="@string/edit_text_password"
             android:ems="10"
-            android:inputType="textPassword"/>
+            android:inputType="textPassword" />
 
         <EditText
             android:id="@+id/editTextConfirmPassword"
@@ -104,7 +99,30 @@
             android:layout_marginRight="8dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
-            android:text="Register"/>
+            android:text="@string/register_register" />
 
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center">
+
+            <ProgressBar
+                android:id="@+id/progressBar"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:indeterminate="true"
+                android:layout_centerHorizontal="true"
+                android:visibility="gone" />
+
+            <ScrollView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <TextView
+                    android:id="@+id/responseView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </ScrollView>
+        </RelativeLayout>
     </RelativeLayout>
 </android.support.constraint.ConstraintLayout>
