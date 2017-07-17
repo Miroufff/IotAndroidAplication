@@ -13,6 +13,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import fr.imie.sensair.R;
+import fr.imie.sensair.api.SensorApiService;
 import fr.imie.sensair.model.Sensor;
 import fr.imie.sensair.model.User;
 
@@ -26,11 +27,13 @@ import java.util.List;
 public class SensorAdapter extends ArrayAdapter<Sensor> {
     private final Context context;
     private final List<Sensor> sensors;
+    private final SensorApiService sensorApiService;
 
     public SensorAdapter(Context context, List<Sensor> sensors) {
         super(context, 0, sensors);
         this.context = context;
         this.sensors = sensors;
+        this.sensorApiService = new SensorApiService();
     }
 
     @Override
@@ -70,11 +73,9 @@ public class SensorAdapter extends ArrayAdapter<Sensor> {
             @Override
             public void onClick(View arg0) {
                 // TODO - Send mqtt msg to stop send data
-                SensorAdapter.this.sensors.get((Integer) arg0.getTag()).setEnable(((Switch) arg0).isChecked());
-                Toast.makeText(SensorAdapter.this.context,
-                    "Sensor enable is " + SensorAdapter.this.sensors.get((Integer) arg0.getTag()).isEnable(),
-                    Toast.LENGTH_LONG
-                ).show();
+                Sensor sensor = SensorAdapter.this.sensors.get((Integer) arg0.getTag());
+                sensor.setEnable(((Switch) arg0).isChecked());
+                SensorAdapter.this.sensorApiService.updateStatus(SensorAdapter.this.context, sensor);
             }
         });
 
@@ -96,7 +97,7 @@ public class SensorAdapter extends ArrayAdapter<Sensor> {
             public void onClick(DialogInterface dialog, int which) {
                 //SensorAdapter.this.sensors.remove();
                 Sensor sensor = SensorAdapter.this.sensors.get(position);
-                // TODO - Call api to delete a sensor
+                SensorAdapter.this.sensorApiService.removeSensor(SensorAdapter.this.context, sensor);
                 sensors.remove(position);
                 SensorAdapter.this.notifyDataSetChanged();
                 Toast.makeText(SensorAdapter.this.context, "Sensor deleted", Toast.LENGTH_LONG).show();

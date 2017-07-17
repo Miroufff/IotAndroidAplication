@@ -89,9 +89,6 @@ public class SensorActivity extends AppCompatActivity {
         this.detailUserButton = (Button) this.findViewById(R.id.detailUserButton);
         this.sensorListView = (ListView) findViewById(R.id.listView);
 
-        //SensorApiService sensorApiService = new SensorApiService(this, this.currentUser);
-        //JSONArray jsonObject = sensorApiService.getSensorsByUser();
-
         this.queue = Volley.newRequestQueue(this);
         Thread t = new Thread(new Runnable() {
             @Override
