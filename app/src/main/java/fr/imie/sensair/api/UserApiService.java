@@ -25,7 +25,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
-import fr.imie.sensair.activities.DetailUserActivity;
 import fr.imie.sensair.activities.SensorActivity;
 import fr.imie.sensair.model.User;
 import fr.imie.sensair.properties.ApiProperties;
@@ -60,17 +59,17 @@ public class UserApiService {
                                     prefsEditor.putString("currentUser", json);
                                     prefsEditor.putString("token", obj.getString("access_token"));
                                     prefsEditor.putBoolean("connected", true);
-                                    prefsEditor.commit();
+                                    prefsEditor.apply();
                                     context.finish();
                                     context.startActivity(new Intent(context, SensorActivity.class));
                                 } catch (JSONException e) {
-                                    // Do something with the exception
+                                    Toast.makeText(context, "Error while auth.", Toast.LENGTH_LONG).show();
                                 }
                             }
                         }, new Response.ErrorListener() {
                             @Override
                             public void onErrorResponse(VolleyError error) {
-                                Toast.makeText(context, "Error during the login action.", Toast.LENGTH_LONG).show();
+                                Toast.makeText(context, "Error while calling api.", Toast.LENGTH_LONG).show();
                             }
                         }
                     ) {
