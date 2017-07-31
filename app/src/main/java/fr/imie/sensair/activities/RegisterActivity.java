@@ -19,7 +19,7 @@ import fr.imie.sensair.api.UserApiService;
 import java.io.DataOutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import fr.imie.sensair.lib.HttpUtils;
+
 import fr.imie.sensair.lib.Utils;
 import fr.imie.sensair.model.User;
 
@@ -103,19 +103,10 @@ public class RegisterActivity extends AppCompatActivity {
                     userApiService.register(currentUser, password, RegisterActivity.this);
 
                     try {
-                        HttpURLConnection connection = HttpUtils.httpConnection(new URL(API_POST_URL), "POST");
-
                         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(RegisterActivity.this);
                         SharedPreferences.Editor prefsEditor = prefs.edit();
                         Gson gson = new Gson();
                         String jsonCurrentUser = gson.toJson(currentUser);
-
-                        DataOutputStream outputStream = new DataOutputStream(connection.getOutputStream());
-                        outputStream.writeBytes(jsonCurrentUser);
-                        outputStream.flush();
-                        outputStream.close();
-
-                        String httpResponse = HttpUtils.serializeHttpResponse(connection);
 
                         prefsEditor.putString("currentUser", jsonCurrentUser);
                         prefsEditor.putBoolean("connected", true);
