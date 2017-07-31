@@ -11,7 +11,6 @@ import fr.imie.sensair.R;
 import fr.imie.sensair.model.Sensor;
 
 public class AddSensorActivity extends AppCompatActivity {
-
     private EditText uuidEditText;
     private EditText displayNameEditText;
     private Button validateButton;

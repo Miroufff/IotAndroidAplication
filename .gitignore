@@ -52,3 +52,4 @@ Thumbs.db
 .idea/dataSources.ids
 .idea/*
 
+app/src/main/java/fr/imie/sensair/properties/ApiProperties.java
