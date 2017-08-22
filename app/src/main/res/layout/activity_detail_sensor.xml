@@ -46,12 +46,63 @@
             android:layout_toRightOf="@id/textViewProduct"
             />
 
-        <WebView
-            android:id="@+id/webViewGrafana"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_below="@id/textViewVendor"
+        <TextView
+            android:id="@+id/textViewTemperature"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Temperature : "
+            android:layout_below="@id/textViewVersion"
             />
+        <TextView
+            android:id="@+id/textViewTemperatureValue"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/textViewVersion"
+            android:layout_toRightOf="@id/textViewTemperature"
+            />
+        <TextView
+            android:id="@+id/textViewHumidity"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Humidity : "
+            android:layout_below="@id/textViewTemperature"
+            />
+        <TextView
+            android:id="@+id/textViewHumidityValue"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/textViewTemperature"
+            android:layout_toRightOf="@id/textViewHumidity"
+            />
+        <TextView
+            android:id="@+id/textViewAirQuality"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Air Quality : "
+            android:layout_below="@id/textViewHumidity"
+            />
+        <TextView
+            android:id="@+id/textViewAirQualityValue"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/textViewHumidity"
+            android:layout_toRightOf="@id/textViewAirQuality"
+            />
+        <TextView
+            android:id="@+id/textViewDust"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Dust : "
+            android:layout_below="@id/textViewAirQuality"
+            />
+        <TextView
+            android:id="@+id/textViewDustValue"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/textViewAirQuality"
+            android:layout_toRightOf="@id/textViewDust"
+            />
+
     </RelativeLayout>
 
 </android.support.constraint.ConstraintLayout>

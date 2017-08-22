@@ -128,10 +128,6 @@ public class SensorActivity extends AppCompatActivity {
 
         t.start();
 
-        /*Intent intent = new Intent(this, AirQualityExceptionService.class);
-        intent.putExtra("foo", "bar");
-        this.bindService(intent, SensorActivity.this.connection, Context.BIND_AUTO_CREATE);*/
-
         this.sensorListView.setOnItemClickListener(new AdapterView.OnItemClickListener(){
             @Override
             public void onItemClick(AdapterView<?> parent,View v, int position, long id) {
