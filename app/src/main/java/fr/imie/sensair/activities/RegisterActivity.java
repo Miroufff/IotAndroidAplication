@@ -12,6 +12,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
+
 import com.google.gson.Gson;
 import fr.imie.sensair.R;
 import fr.imie.sensair.adapters.UserAdapter;
@@ -32,11 +34,6 @@ public class RegisterActivity extends AppCompatActivity {
     private EditText passwordText;
     private EditText confirmPasswordText;
 
-    private ProgressBar progressBar;
-    private TextView responseView;
-
-    static final String API_POST_URL = "http://iot.lacji.net/api/customers";
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,8 +45,6 @@ public class RegisterActivity extends AppCompatActivity {
         emailText = (EditText) findViewById(R.id.editTextEmail);
         passwordText = (EditText) findViewById(R.id.editTextPassword);
         confirmPasswordText = (EditText) findViewById(R.id.editTextConfirmPassword);
-        progressBar = (ProgressBar) findViewById(R.id.progressBar);
-        responseView = (TextView) findViewById(R.id.responseView);
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         Button registerButton = (Button) findViewById(R.id.buttonRegister);
@@ -74,11 +69,6 @@ public class RegisterActivity extends AppCompatActivity {
         String email = emailText.getText().toString();
         String password = passwordText.getText().toString();
         String confirm_password = confirmPasswordText.getText().toString();
-
-        protected void onPreExecute() {
-            progressBar.setVisibility(View.VISIBLE);
-            responseView.setText("");
-        }
 
         protected String doInBackground(Void... urls) {
 
@@ -127,11 +117,10 @@ public class RegisterActivity extends AppCompatActivity {
 
         protected void onPostExecute(String response) {
             if(response == null) {
-                response = "THERE WAS AN ERROR";
+                response = "Error";
             }
-            progressBar.setVisibility(View.GONE);
-            Log.i("INFO", response);
-            responseView.setText(response);
+
+            Toast.makeText(RegisterActivity.this, response, Toast.LENGTH_LONG).show();
         }
     }
 }
