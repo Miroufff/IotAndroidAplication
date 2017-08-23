@@ -187,7 +187,7 @@ public class DetailSensorActivity extends AppCompatActivity {
             final RequestFuture<JSONObject> future = RequestFuture.newFuture();
             JsonObjectRequest request = new JsonObjectRequest(
                     Request.Method.GET,
-                    "http://192.168.43.247/IotApi/web/app.php/api/datasensors/" + DetailSensorActivity.this.sensor.getId(),
+                    ApiProperties.getInstance().addressServer + ApiProperties.getInstance().apiPath + "/datasensors/" + DetailSensorActivity.this.sensor.getId(),
                     null,
                     future,
                     future

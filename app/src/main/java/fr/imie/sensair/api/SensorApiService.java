@@ -17,6 +17,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import fr.imie.sensair.activities.DetailSensorActivity;
 import fr.imie.sensair.activities.SensorActivity;
 import fr.imie.sensair.adapters.SensorAdapter;
 import fr.imie.sensair.model.Sensor;
@@ -48,16 +49,18 @@ public class SensorApiService {
 
     public void updateCustomer(final Context context, final User customer, final String uuid, final String displayName) {
         RequestQueue queue = Volley.newRequestQueue(context);
-        StringRequest postRequest = new StringRequest(Request.Method.GET, ApiProperties.getInstance().addressServer + ApiProperties.getInstance().apiPath + "/sensors/updateCustomer",
+        StringRequest postRequest = new StringRequest(Request.Method.POST, ApiProperties.getInstance().addressServer + ApiProperties.getInstance().apiPath + "/sensors/updateCustomer",
             new Response.Listener<String>() {
                 @Override
                 public void onResponse(String response) {
                     Toast.makeText(context, "Sensor is enable", Toast.LENGTH_LONG).show();
+                    Intent intent = new Intent(context, SensorActivity.class);
+                    context.startActivity(intent);
                 }
             }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Toast.makeText(context, "Error during the update customer action.", Toast.LENGTH_LONG).show();
+                Toast.makeText(context, "Error during the update sensor action.", Toast.LENGTH_LONG).show();
             }
         }) {
             @Override
